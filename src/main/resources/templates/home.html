@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>배드민턴 매칭 시스템</title>
+</head>
+<body>
+<h1>실시간 게임 현황</h1>
+<ul>
+    <li th:each="game : ${games}">
+        <span th:text="${game.gameTime}">게임 시간</span> -
+        <span th:each="player : ${game.players}" th:text="${player.username}">플레이어</span>
+    </li>
+</ul>
+
+<h2>대기열 현황</h2>
+<ul>
+    <li th:each="user : ${waitingList}" th:text="${user.username}">대기중 사용자</li>
+</ul>
+</body>
+</html>
