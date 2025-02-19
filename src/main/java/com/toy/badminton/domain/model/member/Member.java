@@ -30,15 +30,16 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Level level;
 
-    private Member(String loginId, String password, String username, Level level) {
+    public Member(String loginId, String password, String username, String phoneNumber, Level level) {
         this.loginId = loginId;
         this.password = password;
         this.username = username;
+        this.phoneNumber = phoneNumber;
         this.level = level;
     }
 
     public static Member createMember(MemberSignupRequest request) {
-        return new Member(request.loginId(), request.password(), request.username(), request.level());
+        return new Member(request.loginId(), request.password(), request.username(), request.phoneNumber(), request.level());
     }
 
     public String  getLevelDescription() {
