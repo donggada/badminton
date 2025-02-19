@@ -1,15 +1,22 @@
 package com.toy.badminton.domain.model.member;
 
 import com.toy.badminton.application.dto.request.MemberSignupRequest;
+import com.toy.badminton.domain.model.BaseTimeEntity;
+import com.toy.badminton.domain.model.matchingInfo.MatchingInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +36,9 @@ public class Member {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Level level;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MatchingInfo> matchingInfos = new ArrayList<>();
 
     public Member(String loginId, String password, String username, String phoneNumber, Level level) {
         this.loginId = loginId;

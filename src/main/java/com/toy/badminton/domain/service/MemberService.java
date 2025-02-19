@@ -7,6 +7,7 @@ import com.toy.badminton.application.dto.request.MemberSignupRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.toy.badminton.infrastructure.exception.ErrorCode.INVALID_LOGIN_ID;
 import static com.toy.badminton.infrastructure.exception.ErrorCode.INVALID_MEMBER;
 
 @Service
@@ -20,6 +21,10 @@ public class MemberService {
 
     public Member authenticateMember(LoginRequest request) {
         return memberRepository.findByLoginIdAndPassword(request.login(), request.password())
-                .orElseThrow(() -> INVALID_MEMBER.build(request.login()));
+                .orElseThrow(() -> INVALID_LOGIN_ID.build(request.login()));
+    }
+
+    public Member findMember(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> INVALID_MEMBER.build(memberId));
     }
 }

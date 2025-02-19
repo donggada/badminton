@@ -7,14 +7,16 @@ public record LoginResponse(
         String loginId,
         String username,
         String phoneNumber,
-        Level level
+        Level level,
+        String message
 ) {
     public static LoginResponse of (Member member) {
         return new LoginResponse(
                 member.getLoginId(),
                 member.getUsername(),
                 member.getPhoneNumber(),
-                member.getLevel()
+                member.getLevel(),
+                "로그인 성공"
         );
     }
 }
