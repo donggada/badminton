@@ -4,15 +4,19 @@ import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+import static com.toy.badminton.domain.model.matchingInfo.MatchingStatus.LEFT_ROOM;
+import static com.toy.badminton.domain.model.matchingInfo.MatchingStatus.WAITING;
 
 @Entity
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(callSuper = false)
+@ToString
 public class MatchingInfo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,21 +30,20 @@ public class MatchingInfo extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private boolean isActive;
+    @Column(nullable = false)
+    private MatchingStatus status;
 
-    private MatchingInfo(MatchingRoom matchingRoom, Member member) {
-        this.matchingRoom = matchingRoom;
-        this.member = member;
-        this.isActive = true;
-    }
-
-    public static MatchingInfo createMatchingInfo(MatchingRoom matchingRoom, Member member) {
-        return new MatchingInfo(matchingRoom, member);
-    }
+    private LocalDateTime leaveDate;
 
     public void leaveRoom() {
-        this.isActive = false;
+        this.status = LEFT_ROOM;
+        this.leaveDate = LocalDateTime.now();
     }
+
+    public boolean isWaiting() {
+        return status.equals(WAITING);
+    }
+
 
     public String getMatchingRoomName() {
         return matchingRoom.getName();
@@ -51,6 +54,26 @@ public class MatchingInfo extends BaseTimeEntity {
     }
 
     public String getMessage() {
-        return isActive ? "입장" : "퇴장";
+        return status.getDescription();
+    }
+
+    public static MatchingInfo createMatchingInfo(MatchingRoom matchingRoom, Member member) {
+        return new MatchingInfo(matchingRoom, member);
+    }
+
+    private MatchingInfo(MatchingRoom matchingRoom, Member member) {
+        this.matchingRoom = matchingRoom;
+        this.member = member;
+        this.status = WAITING;
+    }
+
+    public static MatchingInfo fixture (Long id, MatchingRoom matchingRoom, Member member, MatchingStatus status, LocalDateTime date) {
+        return new MatchingInfo(
+                id,
+                matchingRoom,
+                member,
+                status,
+                date
+        );
     }
 }

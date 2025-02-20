@@ -4,10 +4,7 @@ import com.toy.badminton.application.dto.request.MemberSignupRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.matchingInfo.MatchingInfo;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +13,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(callSuper = false)
+@ToString
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +39,15 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchingInfo> matchingInfos = new ArrayList<>();
 
-    public Member(String loginId, String password, String username, String phoneNumber, Level level) {
+    public String  getLevelDescription() {
+        return level.getDescription();
+    }
+
+    public int getLevelValue() {
+        return level.getValue();
+    }
+
+    private Member(String loginId, String password, String username, String phoneNumber, Level level) {
         this.loginId = loginId;
         this.password = password;
         this.username = username;
@@ -52,7 +59,18 @@ public class Member extends BaseTimeEntity {
         return new Member(request.loginId(), request.password(), request.username(), request.phoneNumber(), request.level());
     }
 
-    public String  getLevelDescription() {
-        return level.getDescription();
+    public static Member fixture(Long id, String loginId, String password, String username, String phoneNumber, Level level, List<MatchingInfo> matchingInfos) {
+        return new Member(
+                id,
+                loginId,
+                password,
+                username,
+                phoneNumber,
+                level,
+                matchingInfos
+        );
     }
+
+
+
 }

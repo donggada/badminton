@@ -18,9 +18,8 @@ public class MatchingRoomService {
         return matchingRoomRepository.save(MatchingRoom.createMatchingRoom(name));
     }
 
-    public MatchingRoom findMatchingRoom(Long matchingId) {
-        return matchingRoomRepository.findById(matchingId).orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingId));
+    public MatchingRoom findMatchingRoom(Long matchingRoomId) {
+        return matchingRoomRepository.findById(matchingRoomId).orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingRoomId));
     }
-
 
 }
