@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "badminton-API", version = "v1"),
+        info = @Info(title = "badminton-API", version = "v1.0.0"),
         security = { @SecurityRequirement(name = "bearerAuth") }
 )
 public class SwaggerConfig {
