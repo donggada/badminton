@@ -3,8 +3,8 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:mysql://localhost:33306/badminton?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mariadb://localhost:33306/badminton?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
+    driver-class-name: org.mariadb.jdbc.Driver
     maximum-pool-size: 10
     max-lifetime: 30000
     connection-timeout: 3000
@@ -17,18 +17,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6380
-#  cache:
-#    type: redis
+  #  data:
+  #    redis:
+  #      host: localhost
+  #      port: 6380
+  #  cache:
+  #    type: redis
 
   thymeleaf:
     cache=false:
 
 springdoc :
   override-with-generic-response : false
+
 ---
 spring:
   config:
@@ -50,23 +51,29 @@ spring:
 #    redis:
 #      host: localhost
 #      port: 6380
+
 ---
 spring:
   config:
     activate:
       on-profile: prod
   datasource:
-    hikari:
-      jdbc-url: jdbc:mysql://PROD_URL/coupon?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      maximum-pool-size: 10
-      max-lifetime: 30000
-      connection-timeout: 3000
-      username: PROD_USER_NAME
-      password: PROD_PASSWORD
+    url: jdbc:mariadb://${PROD_DB_URL}:${PROD_DB_PORT}/${PROD_DB_DATA_BASE}?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
+    driver-class-name: org.mariadb.jdbc.Driver
+    maximum-pool-size: 10
+    max-lifetime: 30000
+    connection-timeout: 3000
+    username: ${PROD_DB_USER_NAME}
+    password: ${PROD_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
 #  data:
 #    redis:
 #      host: PROD_URL

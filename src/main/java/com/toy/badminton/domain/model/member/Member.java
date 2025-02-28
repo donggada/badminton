@@ -55,8 +55,8 @@ public class Member extends BaseTimeEntity {
         this.level = level;
     }
 
-    public static Member createMember(MemberSignupRequest request) {
-        return new Member(request.loginId(), request.password(), request.username(), request.phoneNumber(), request.level());
+    public static Member createMember(MemberSignupRequest request, String encodePassword) {
+        return new Member(request.loginId(), encodePassword, request.username(), request.phoneNumber(), request.level());
     }
 
     public static Member fixture(Long id, String loginId, String password, String username, String phoneNumber, Level level, List<MatchingInfo> matchingInfos) {

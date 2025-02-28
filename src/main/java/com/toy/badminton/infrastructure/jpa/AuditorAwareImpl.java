@@ -1,6 +1,10 @@
 package com.toy.badminton.infrastructure.jpa;
 
+
+import com.toy.badminton.infrastructure.security.CustomUserDetails;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -10,7 +14,19 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-        //todo 나중에 변경 시큐리티 적용후 다시 변경 예정
-        return Optional.of(1L);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return Optional.empty();
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomUserDetails) {
+            return Optional.of(((CustomUserDetails) principal).getMemberId()); // ID 반환
+        }
+
+        return Optional.empty();
     }
 }

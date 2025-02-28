@@ -9,9 +9,9 @@ services:
       - "mode=standalone"
     ports:
       - 6380:6380
-  mysql:
-    container_name: study-mysql
-    image: ubuntu/mysql:edge
+  mariadb:
+    container_name: badminton-mariadb
+    image: mariadb:10.5
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp=1
     ports:
       - 33306:3306
