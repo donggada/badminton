@@ -29,7 +29,6 @@ public class BalancedMatchingService implements MatchService {
         return matchGroupList;
     }
 
-
     private List<Member> balanceGroup(List<Member> group) {
         List<Member> balancedGroup = new ArrayList<>(group);
 

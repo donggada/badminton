@@ -8,6 +8,11 @@ import com.toy.badminton.application.facade.MatchingFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/matching-room")
@@ -31,4 +36,27 @@ public class MatchingController {
         //todo 시큐리티 변경후 memberID 변경
         return matchingFacade.leaveRoom(roomId, memberId);
     }
+
+    @GetMapping("/test")
+    public List<WaitingPlayer> test () {
+
+        Random random = new Random();
+        int n = random.nextInt(10);
+        ArrayList<WaitingPlayer> result = new ArrayList<>();
+        for (int i = 1; i <= n ; i++) {
+            result.add(new WaitingPlayer(i, "지원자" + i, i + "분"));
+        }
+
+        return result;
+    }
+
+    record WaitingPlayer(
+            int id,
+            String name,
+            String time
+    ) {
+
+    }
+
 }
+

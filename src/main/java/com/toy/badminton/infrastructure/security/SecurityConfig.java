@@ -31,6 +31,8 @@ public class SecurityConfig {
                 .authorizeRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll() // 인증 필요 없는 경로
                         .requestMatchers("/api/v1/auth/login","/api/v1/member").permitAll()
+                        .requestMatchers("/api/v1/matching-room/test").permitAll()
+                        .requestMatchers("/add-waiting", "/remove-waiting", "view").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->
