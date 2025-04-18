@@ -1,4 +1,4 @@
-package com.toy.badminton.domain.model.matchingInfo;
+package com.toy.badminton.domain.model.match.matchingInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

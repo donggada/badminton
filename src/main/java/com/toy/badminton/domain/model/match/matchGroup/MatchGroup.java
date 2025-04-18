@@ -1,7 +1,7 @@
-package com.toy.badminton.domain.model.matchGroup;
+package com.toy.badminton.domain.model.match.matchGroup;
 
 import com.toy.badminton.domain.model.BaseTimeEntity;
-import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @ToString
+@Builder
 public class MatchGroup extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,7 @@ public class MatchGroup extends BaseTimeEntity {
     @JoinColumn(name = "matching_room_id")
     private MatchingRoom matchingRoom;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "match_group_members",
@@ -34,19 +36,12 @@ public class MatchGroup extends BaseTimeEntity {
 
     private MatchGroup(MatchingRoom matchingRoom, List<Member> members) {
         this.matchingRoom = matchingRoom;
-        this.members.addAll(members);
+        this.members = members;
     }
 
     public static MatchGroup createMatchGroup(MatchingRoom matchingRoom, List<Member> members) {
         return new MatchGroup(matchingRoom, members);
     }
 
-    public static MatchGroup fixture(Long id, MatchingRoom matchingRoom, List<Member> members) {
-        return new MatchGroup(
-                id,
-                matchingRoom,
-                members
-        );
-    }
 }
 

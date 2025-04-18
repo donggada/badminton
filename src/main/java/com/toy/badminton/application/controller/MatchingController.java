@@ -7,6 +7,7 @@ import com.toy.badminton.application.dto.response.RoomParticipationResponse;
 import com.toy.badminton.application.facade.MatchingFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.ArrayList;
 import java.util.List;

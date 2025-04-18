@@ -1,8 +1,8 @@
 package com.toy.badminton.domain.service;
 
-import com.toy.badminton.domain.model.matchingInfo.MatchingInfo;
-import com.toy.badminton.domain.model.matchingInfo.MatchingInfoRepository;
-import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
+import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfoRepository;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

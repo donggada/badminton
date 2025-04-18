@@ -1,15 +1,15 @@
-package com.toy.badminton.domain.model.matchingInfo;
+package com.toy.badminton.domain.model.match.matchingInfo;
 
 import com.toy.badminton.domain.model.BaseTimeEntity;
-import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-import static com.toy.badminton.domain.model.matchingInfo.MatchingStatus.LEFT_ROOM;
-import static com.toy.badminton.domain.model.matchingInfo.MatchingStatus.WAITING;
+import static com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus.LEFT_ROOM;
+import static com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus.WAITING;
 
 @Entity
 @Getter
@@ -17,6 +17,7 @@ import static com.toy.badminton.domain.model.matchingInfo.MatchingStatus.WAITING
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @ToString
+@Builder
 public class MatchingInfo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +45,6 @@ public class MatchingInfo extends BaseTimeEntity {
         return status.equals(WAITING);
     }
 
-
     public String getMatchingRoomName() {
         return matchingRoom.getName();
     }
@@ -65,15 +65,5 @@ public class MatchingInfo extends BaseTimeEntity {
         this.matchingRoom = matchingRoom;
         this.member = member;
         this.status = WAITING;
-    }
-
-    public static MatchingInfo fixture (Long id, MatchingRoom matchingRoom, Member member, MatchingStatus status, LocalDateTime date) {
-        return new MatchingInfo(
-                id,
-                matchingRoom,
-                member,
-                status,
-                date
-        );
     }
 }

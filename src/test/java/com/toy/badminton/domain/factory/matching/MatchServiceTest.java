@@ -13,11 +13,10 @@ class MatchServiceTest {
     @Test
     void sort() {
         RandomMatchingService randomMatchingService = new RandomMatchingService();
-
-        Member member1 = Member.fixture(1L, "login1", "", "철수", "", Level.MASTER, new ArrayList<>());
-        Member member2 = Member.fixture(2L, "login2", "", "영희", "", Level.GROUP_A, new ArrayList<>());
-        Member member3 = Member.fixture(3L, "login3", "", "복희", "", Level.GROUP_B, new ArrayList<>());
-        Member member4 = Member.fixture(4L, "login4", "", "첨지", "", Level.GROUP_C, new ArrayList<>());
+        Member member1 = Member.builder().id(1L).loginId("login1").username("철수").level(Level.MASTER).build();
+        Member member2 = Member.builder().id(1L).loginId("login1").username("철수").level(Level.GROUP_A).build();
+        Member member3 = Member.builder().id(1L).loginId("login1").username("철수").level(Level.GROUP_B).build();
+        Member member4 = Member.builder().id(1L).loginId("login1").username("철수").level(Level.GROUP_C).build();
 
         ArrayList<Member> memberList = new ArrayList<>();
         memberList.add(member1);

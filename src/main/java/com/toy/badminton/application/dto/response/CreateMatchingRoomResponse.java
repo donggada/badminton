@@ -1,6 +1,6 @@
 package com.toy.badminton.application.dto.response;
 
-import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 
 public record CreateMatchingRoomResponse(
         Long id,

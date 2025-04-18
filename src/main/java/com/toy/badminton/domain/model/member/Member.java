@@ -2,7 +2,7 @@ package com.toy.badminton.domain.model.member;
 
 import com.toy.badminton.application.dto.request.MemberSignupRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
-import com.toy.badminton.domain.model.matchingInfo.MatchingInfo;
+import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @ToString
+@Builder
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +37,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Level level;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchingInfo> matchingInfos = new ArrayList<>();
 
@@ -58,19 +60,4 @@ public class Member extends BaseTimeEntity {
     public static Member createMember(MemberSignupRequest request, String encodePassword) {
         return new Member(request.loginId(), encodePassword, request.username(), request.phoneNumber(), request.level());
     }
-
-    public static Member fixture(Long id, String loginId, String password, String username, String phoneNumber, Level level, List<MatchingInfo> matchingInfos) {
-        return new Member(
-                id,
-                loginId,
-                password,
-                username,
-                phoneNumber,
-                level,
-                matchingInfos
-        );
-    }
-
-
-
 }

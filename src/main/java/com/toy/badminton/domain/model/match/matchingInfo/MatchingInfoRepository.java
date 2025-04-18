@@ -1,6 +1,6 @@
-package com.toy.badminton.domain.model.matchingInfo;
+package com.toy.badminton.domain.model.match.matchingInfo;
 
-import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

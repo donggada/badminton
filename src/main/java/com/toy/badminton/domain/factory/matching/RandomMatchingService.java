@@ -1,7 +1,7 @@
 package com.toy.badminton.domain.factory.matching;
 
-import com.toy.badminton.domain.model.matchGroup.MatchGroup;
-import com.toy.badminton.domain.model.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import org.springframework.stereotype.Service;
 

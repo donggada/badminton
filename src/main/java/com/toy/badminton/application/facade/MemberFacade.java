@@ -33,7 +33,7 @@ public class MemberFacade {
     }
 
     public void test () {
-        Member fixture = Member.fixture(null, "test", "test", "t", "s", Level.MASTER, new ArrayList<>());
+        Member fixture = Member.builder().build();
         memberRepository.save(fixture);
     }
 
