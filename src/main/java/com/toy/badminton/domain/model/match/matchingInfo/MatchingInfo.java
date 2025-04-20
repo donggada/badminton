@@ -36,9 +36,11 @@ public class MatchingInfo extends BaseTimeEntity {
 
     private LocalDateTime leaveDate;
 
-    public void leaveRoom() {
-        this.status = LEFT_ROOM;
-        this.leaveDate = LocalDateTime.now();
+    public void changeStatus(MatchingStatus status) {
+        this.status = status;
+        if (status.equals(LEFT_ROOM)) {
+            this.leaveDate = LocalDateTime.now();
+        }
     }
 
     public boolean isWaiting() {

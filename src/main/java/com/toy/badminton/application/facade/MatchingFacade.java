@@ -1,13 +1,14 @@
 package com.toy.badminton.application.facade;
 
 import com.toy.badminton.application.dto.request.CreateMatchingRoomRequest;
-import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.application.dto.response.CreateMatchingRoomResponse;
 import com.toy.badminton.application.dto.response.RoomParticipationResponse;
 import com.toy.badminton.domain.factory.matching.MatchingFactory;
 import com.toy.badminton.domain.factory.matching.MatchingType;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
+import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.domain.service.MatchGroupService;
 import com.toy.badminton.domain.service.MatchingInfoService;
 import com.toy.badminton.domain.service.MatchingRoomService;
@@ -26,26 +27,20 @@ public class MatchingFacade {
     private final MatchGroupService matchGroupService;
     private final MatchingFactory matchingFactory;
 
-    public CreateMatchingRoomResponse createRoom(CreateMatchingRoomRequest request) {
+    public CreateMatchingRoomResponse createRoom(CreateMatchingRoomRequest request, Member member) {
+
         return CreateMatchingRoomResponse.of(
-                matchingRoomService.createRoom(request.roomName())
+                matchingRoomService.createRoom(request.roomName(), member)
         );
     }
 
-    public RoomParticipationResponse joinRoom(Long matchingRoomId, RoomParticipationRequest request) {
+    public RoomParticipationResponse changeMatchingStatus (Long matchingRoomId, Member member, MatchingStatus status) {
         return RoomParticipationResponse.of(
-                matchingInfoService.joinRoom(
+                matchingInfoService.changeMatchingStatus(
                         matchingRoomService.findMatchingRoom(matchingRoomId),
-                        memberService.findMember(request.MemberId())
+                        member,
+                        status
                 )
-        );
-    }
-
-    public RoomParticipationResponse leaveRoom(Long matchingRoomId, Long memberId) {
-        return RoomParticipationResponse.of(
-                matchingInfoService.leaveRoom(
-                        matchingRoomService.findMatchingRoom(matchingRoomId),
-                        memberService.findMember(memberId))
         );
     }
 
@@ -56,4 +51,6 @@ public class MatchingFacade {
         matchGroupService.savaAllMatchGroup(matchGroups);
         return "";
     }
+
+
 }

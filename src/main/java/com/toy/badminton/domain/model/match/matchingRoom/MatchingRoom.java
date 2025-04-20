@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.toy.badminton.infrastructure.exception.ErrorCode.MATCHING_ROOM_EDIT_FORBIDDEN;
 import static com.toy.badminton.infrastructure.exception.ErrorCode.NOT_ENOUGH_MATCHING_MEMBERS;
 
 @Entity
@@ -40,14 +41,15 @@ public class MatchingRoom extends BaseTimeEntity {
     @Builder.Default
     @ManyToMany
     @JoinTable(
-            name = "matching_room_modifiable_members",
+            name = "matching_room_manager_members",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
-    private Set<Member> modifiableMembers = new HashSet<>();
+    private Set<Member> managerList = new HashSet<>();
 
     private MatchingRoom(String name) {
         this.name = name;
+        this.managerList = new HashSet<>();
     }
 
     public List<Member> getActiveMembers() {
@@ -67,7 +69,15 @@ public class MatchingRoom extends BaseTimeEntity {
         }
     }
 
-    public static MatchingRoom createMatchingRoom(String name) {
-        return new MatchingRoom(name);
+    public void validModifiableMembers(Member member) {
+        if (!managerList.contains(member)) {
+            throw MATCHING_ROOM_EDIT_FORBIDDEN.build(member.getId());
+        }
+    }
+
+    public static MatchingRoom createMatchingRoom(String name, Member member) {
+        MatchingRoom matchingRoom = new MatchingRoom(name);
+        matchingRoom.managerList.add(member);
+        return matchingRoom;
     }
 }
