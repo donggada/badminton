@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
 import static com.toy.badminton.infrastructure.exception.ErrorCode.INVALID_MATCHING_ROOM_INFO;
 
 @Service
@@ -23,5 +26,16 @@ public class MatchingInfoService {
                 .orElseThrow(() -> INVALID_MATCHING_ROOM_INFO.build(matchingRoom.getId(), member.getId()));
         matchingInfo.changeStatus(status);
         return matchingInfo;
+    }
+
+    public MatchingInfo saveMatchingInfo(MatchingRoom matchingRoom, Member member) {
+        return matchingInfoRepository.save(MatchingInfo.createMatchingInfo(matchingRoom, member));
+    }
+
+    public void changeStatusByMatched (List<MatchingInfo> matchingInfos, Set<Member> meberSet) {
+        matchingInfos.stream()
+                .filter(info -> meberSet.contains(info.getMember()))
+                .forEach(info -> info.changeStatus(MatchingStatus.MATCHED));
+
     }
 }

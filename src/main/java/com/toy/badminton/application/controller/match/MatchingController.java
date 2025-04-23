@@ -4,6 +4,7 @@ import com.toy.badminton.application.dto.request.CreateMatchingRoomRequest;
 import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.application.dto.response.CreateMatchingRoomResponse;
 import com.toy.badminton.application.dto.response.RoomParticipationResponse;
+import com.toy.badminton.application.dto.response.enterMatch.EnterMatchingResponse;
 import com.toy.badminton.application.facade.MatchingFacade;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.member.Member;
@@ -23,6 +24,11 @@ public class MatchingController {
     @PostMapping()
     public CreateMatchingRoomResponse createRoom(CreateMatchingRoomRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return matchingFacade.createRoom(request, customUserDetails.getMember());
+    }
+
+    @PostMapping("/{roomId}")
+    public EnterMatchingResponse enterMatchingRoom(@PathVariable Long roomId , @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return matchingFacade.enterMatchingRoom(roomId, customUserDetails.getMember());
     }
 
     @PatchMapping("/{roomId}")

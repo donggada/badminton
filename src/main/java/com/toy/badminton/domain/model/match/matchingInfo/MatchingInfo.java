@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus.LEFT_ROOM;
 import static com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus.WAITING;
@@ -53,6 +54,10 @@ public class MatchingInfo extends BaseTimeEntity {
 
     public String getMemberName() {
         return member.getUsername();
+    }
+
+    public boolean hasMemberId(Long memberId) {
+        return Objects.equals(member.getId(), memberId);
     }
 
     public String getMessage() {

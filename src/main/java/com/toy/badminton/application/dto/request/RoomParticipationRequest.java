@@ -1,6 +1,5 @@
 package com.toy.badminton.application.dto.request;
 
-import java.util.List;
 import java.util.Set;
 
 public record RoomParticipationRequest(

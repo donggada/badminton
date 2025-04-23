@@ -1,9 +1,11 @@
 package com.toy.badminton.domain.model.match.matchingRoom;
 
+import com.toy.badminton.application.dto.request.ChangeGroupRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
 import com.toy.badminton.domain.model.member.Member;
+import com.toy.badminton.infrastructure.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,8 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.toy.badminton.infrastructure.exception.ErrorCode.MATCHING_ROOM_EDIT_FORBIDDEN;
-import static com.toy.badminton.infrastructure.exception.ErrorCode.NOT_ENOUGH_MATCHING_MEMBERS;
+import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 
 @Entity
 @Getter
@@ -69,10 +70,29 @@ public class MatchingRoom extends BaseTimeEntity {
         }
     }
 
-    public void validModifiableMembers(Member member) {
+    public void validateManager(Member member) {
         if (!managerList.contains(member)) {
             throw MATCHING_ROOM_EDIT_FORBIDDEN.build(member.getId());
         }
+    }
+
+    public void validateChangeRequestMembersExist(ChangeGroupRequest request) {
+        validateMemberExists(request.requesterId(), ErrorCode.REQUESTER_NOT_FOUND);
+        validateMemberExists(request.targetMemberId(), ErrorCode.TARGET_NOT_FOUND);
+    }
+
+    private void validateMemberExists(Long memberId, ErrorCode code) {
+        matchingInfos.stream()
+                .filter(info -> info.hasMemberId(memberId))
+                .findAny()
+                .orElseThrow(() -> code.build(memberId));
+    }
+
+    public void validateMemberNotExists(Member member) {
+        matchingInfos.stream()
+                .filter(info -> info.hasMemberId(member.getId()))
+                .findAny()
+                .ifPresent(info -> { throw DUPLICATE_ENTER.build(member.getId()); });
     }
 
     public static MatchingRoom createMatchingRoom(String name, Member member) {
