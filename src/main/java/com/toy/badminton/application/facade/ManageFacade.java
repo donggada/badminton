@@ -6,15 +6,12 @@ import com.toy.badminton.application.dto.response.RoomParticipationResponse;
 import com.toy.badminton.domain.factory.matching.MatchingFactory;
 import com.toy.badminton.domain.factory.matching.MatchingType;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.domain.service.MatchGroupService;
 import com.toy.badminton.domain.service.MatchingInfoService;
 import com.toy.badminton.domain.service.MatchingRoomService;
 import com.toy.badminton.domain.service.MemberService;
-import com.toy.badminton.infrastructure.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -35,31 +31,40 @@ public class ManageFacade {
     private final MemberService memberService;
     private final MatchingFactory matchingFactory;
 
-    // todo 그룹수정
-    public void changeGroup(Long roomId, Member member, ChangeGroupRequest request) {
+
+    public void replaceMatchGroupMember(Long roomId, Member member, ChangeGroupRequest request) {
         MatchingRoom matchingRoom = matchingRoomService.findManageMatchingRoom(roomId, member);
         matchingRoom.validateChangeRequestMembersExist(request);
-        Member requestMember = memberService.findMember(request.requesterId());
+        Member replacementMember = memberService.findMember(request.replacementMemberId());
         Member targetMember = memberService.findMember(request.targetMemberId());
-        //todo 수정 내용
-        matchGroupService.changeGroups(request.groupId(), requestMember, targetMember);
+        matchGroupService.replaceMatchGroupMember(request.groupId(), targetMember ,replacementMember);
     }
 
     @Transactional
-    public RoomParticipationResponse participationRoom(Long roomId, Member member, RoomParticipationRequest request) {
+    public void participationRoom(Long roomId, Member member, RoomParticipationRequest request) {
+        Set<Member> newManagers = getManagerMembersFromIds(request.managerIdList());
+        MatchingRoom manageMatchingRoom = matchingRoomService.findManageMatchingRoom(roomId, member);
+        manageMatchingRoom.updateRoomInfo(request.roomName(), newManagers);
+    }
+
+    private Set<Member> getManagerMembersFromIds(Set<Long> managerIds) {
+        return managerIds.stream()
+                .map(memberService::findMember)
+                .collect(Collectors.toSet());
+    }
+
+    @Transactional
+    public void startMatch(Long roomId, Member member, MatchingType type) {
         MatchingRoom matchingRoom = matchingRoomService.findManageMatchingRoom(roomId, member);
 
-        return null;
-    }
+        List<MatchGroup> matchGroups = matchGroupService.savaAllMatchGroup(
+                matchingFactory.getService(type).startMatching(matchingRoom)
+        );
 
-    @Transactional
-    public void startMatch(Long roomId, MatchingType type) {
-        MatchingRoom matchingRoom = matchingRoomService.findMatchingRoom(roomId);
+        Set<Member> memberSet = matchGroups.stream()
+                .flatMap(group -> group.getMembers().stream())
+                .collect(Collectors.toSet());
 
-        List<MatchGroup> matchGroups = matchingFactory.getService(type).startMatching(matchingRoom);
-        matchGroupService.savaAllMatchGroup(matchGroups);
-
-        Set<Member> memberSet = matchGroups.stream().flatMap(group -> group.getMembers().stream()).collect(Collectors.toSet());
         matchingInfoService.changeStatusByMatched(matchingRoom.getMatchingInfos(), memberSet);
     }
 }

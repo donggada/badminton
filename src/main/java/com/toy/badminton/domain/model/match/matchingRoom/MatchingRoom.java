@@ -1,6 +1,7 @@
 package com.toy.badminton.domain.model.match.matchingRoom;
 
 import com.toy.badminton.application.dto.request.ChangeGroupRequest;
+import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
@@ -8,6 +9,7 @@ import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.infrastructure.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,7 +23,7 @@ import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @ToString
 @Builder
 public class MatchingRoom extends BaseTimeEntity {
@@ -32,15 +34,18 @@ public class MatchingRoom extends BaseTimeEntity {
     private String name;
 
     @Builder.Default
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchingInfo> matchingInfos = new ArrayList<>();
 
     @Builder.Default
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchGroup> matchGroups = new ArrayList<>();
 
     @Builder.Default
-    @ManyToMany
+    @BatchSize(size = 50)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "matching_room_manager_members",
             joinColumns = @JoinColumn(name = "room_id"),
@@ -77,7 +82,7 @@ public class MatchingRoom extends BaseTimeEntity {
     }
 
     public void validateChangeRequestMembersExist(ChangeGroupRequest request) {
-        validateMemberExists(request.requesterId(), ErrorCode.REQUESTER_NOT_FOUND);
+        validateMemberExists(request.replacementMemberId(), ErrorCode.REQUESTER_NOT_FOUND);
         validateMemberExists(request.targetMemberId(), ErrorCode.TARGET_NOT_FOUND);
     }
 
@@ -93,6 +98,11 @@ public class MatchingRoom extends BaseTimeEntity {
                 .filter(info -> info.hasMemberId(member.getId()))
                 .findAny()
                 .ifPresent(info -> { throw DUPLICATE_ENTER.build(member.getId()); });
+    }
+
+    public void updateRoomInfo(String roomName, Set<Member> memberSet) {
+        name = roomName;
+        managerList.addAll(memberSet);
     }
 
     public static MatchingRoom createMatchingRoom(String name, Member member) {

@@ -9,6 +9,8 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.toy.badminton.infrastructure.exception.ErrorCode.TARGET_NOT_FOUND;
+
 @Entity
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +35,14 @@ public class MatchGroup extends BaseTimeEntity {
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
     private List<Member> members = new ArrayList<>();
+
+    public void replaceMember(Member targetMember, Member replacementMember) {
+        int index = members.indexOf(targetMember);
+        if (index == -1) {
+            throw TARGET_NOT_FOUND.build(targetMember.getId());
+        }
+        members.set(index, replacementMember);
+    }
 
     private MatchGroup(MatchingRoom matchingRoom, List<Member> members) {
         this.matchingRoom = matchingRoom;

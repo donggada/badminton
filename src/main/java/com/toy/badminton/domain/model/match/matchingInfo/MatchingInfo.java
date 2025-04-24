@@ -16,7 +16,7 @@ import static com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus.W
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @ToString
 @Builder
 public class MatchingInfo extends BaseTimeEntity {

@@ -4,6 +4,6 @@ import java.util.Set;
 
 public record RoomParticipationRequest(
         String roomName,
-        Set<Integer> managerIdList
+        Set<Long> managerIdList
 ) {
 }
