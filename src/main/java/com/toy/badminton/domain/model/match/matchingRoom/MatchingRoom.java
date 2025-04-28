@@ -23,7 +23,7 @@ import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(callSuper = false)
 @ToString
 @Builder
 public class MatchingRoom extends BaseTimeEntity {
@@ -76,6 +76,7 @@ public class MatchingRoom extends BaseTimeEntity {
     }
 
     public void validateManager(Member member) {
+        System.out.println(managerList.contains(member));
         if (!managerList.contains(member)) {
             throw MATCHING_ROOM_EDIT_FORBIDDEN.build(member.getId());
         }

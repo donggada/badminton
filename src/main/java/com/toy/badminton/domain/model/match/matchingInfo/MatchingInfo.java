@@ -5,6 +5,7 @@ import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -16,7 +17,7 @@ import static com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus.W
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(callSuper = false)
 @ToString
 @Builder
 public class MatchingInfo extends BaseTimeEntity {

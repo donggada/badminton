@@ -5,6 +5,7 @@ import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class MatchGroup extends BaseTimeEntity {
     private MatchingRoom matchingRoom;
 
     @Builder.Default
+    @BatchSize(size = 50)
     @ManyToMany
     @JoinTable(
             name = "match_group_members",

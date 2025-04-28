@@ -32,7 +32,7 @@ public class MatchingInfoService {
         return matchingInfoRepository.save(MatchingInfo.createMatchingInfo(matchingRoom, member));
     }
 
-    public void changeStatusByMatched (List<MatchingInfo> matchingInfos, Set<Member> meberSet) {
+    public void updateStatusToMatched(List<MatchingInfo> matchingInfos, Set<Member> meberSet) {
         matchingInfos.stream()
                 .filter(info -> meberSet.contains(info.getMember()))
                 .forEach(info -> info.changeStatus(MatchingStatus.MATCHED));

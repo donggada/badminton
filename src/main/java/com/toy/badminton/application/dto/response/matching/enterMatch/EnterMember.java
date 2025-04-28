@@ -1,6 +1,5 @@
-package com.toy.badminton.application.dto.response.enterMatch;
+package com.toy.badminton.application.dto.response.matching.enterMatch;
 
-import com.toy.badminton.domain.factory.matching.MatchingType;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.member.Member;

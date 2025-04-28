@@ -1,4 +1,4 @@
-package com.toy.badminton.application.dto.response;
+package com.toy.badminton.application.dto.response.matching;
 
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 

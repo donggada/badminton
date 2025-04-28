@@ -22,7 +22,7 @@ public enum ErrorCode {
     INVALID_MATCHING_ROOM_INFO(HttpStatus.CONFLICT, "존재하지 않는 매칭정보 입니다.", "matching_id: %d, member_id: %d"),
     INVALID_MATCHING_SERVICE(HttpStatus.CONFLICT, "존재하지 매칭서비스 타입 입니다.", "matching_type: %s"),
     MATCHING_ROOM_EDIT_FORBIDDEN(HttpStatus.CONFLICT, "매칭 수정권한이 없습니다.", "member_id: %d"),
-    REQUESTER_NOT_FOUND(HttpStatus.CONFLICT, "요청자가 매칭방에 존재하지 않습니다..", "member_id: %d"),
+    REQUESTER_NOT_FOUND(HttpStatus.CONFLICT, "요청자가 매칭방에 존재하지 않습니다.", "member_id: %d"),
     TARGET_NOT_FOUND(HttpStatus.CONFLICT, "교체 대상 멤버를 찾을 수 없습니다.", "member_id: %d"),
 
     NOT_ENOUGH_MATCHING_MEMBERS(HttpStatus.CONFLICT, "매칭 가능한 멤버 수가 부족합니다.", "min_size: %d, current_size: %d");

@@ -5,11 +5,9 @@ import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.application.facade.ManageFacade;
 import com.toy.badminton.domain.factory.matching.MatchingType;
 import com.toy.badminton.domain.model.member.Member;
-import com.toy.badminton.infrastructure.security.CurrentMember;
-import com.toy.badminton.infrastructure.security.CustomUserDetails;
+import com.toy.badminton.infrastructure.security.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +20,7 @@ public class ManageController {
     @PatchMapping("{roomId}/groups/members")
     public ResponseEntity<Void> replaceMatchGroupMember(
             @PathVariable Long roomId,
-            @CurrentMember Member member,
+            @AuthMember Member member,
             @RequestBody ChangeGroupRequest request
     ) {
         manageFacade.replaceMatchGroupMember(roomId, member, request);
@@ -32,7 +30,7 @@ public class ManageController {
     @PutMapping("{roomId}/room")
     public ResponseEntity<Void> participationRoom(
             @PathVariable Long roomId,
-            @CurrentMember Member member,
+            @AuthMember Member member,
             @RequestBody RoomParticipationRequest request
     ) {
         manageFacade.participationRoom(roomId, member, request);
@@ -42,7 +40,7 @@ public class ManageController {
     @PostMapping("/{roomId}/start")
     public ResponseEntity<Void> startMatching(
             @PathVariable Long roomId,
-            @CurrentMember Member member
+            @AuthMember Member member
     ) {
         manageFacade.startMatch(roomId, member, MatchingType.RANDOM);
         return noContent();

@@ -2,7 +2,6 @@ package com.toy.badminton.application.facade;
 
 import com.toy.badminton.application.dto.request.ChangeGroupRequest;
 import com.toy.badminton.application.dto.request.RoomParticipationRequest;
-import com.toy.badminton.application.dto.response.RoomParticipationResponse;
 import com.toy.badminton.domain.factory.matching.MatchingFactory;
 import com.toy.badminton.domain.factory.matching.MatchingType;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
@@ -57,14 +56,21 @@ public class ManageFacade {
     public void startMatch(Long roomId, Member member, MatchingType type) {
         MatchingRoom matchingRoom = matchingRoomService.findManageMatchingRoom(roomId, member);
 
-        List<MatchGroup> matchGroups = matchGroupService.savaAllMatchGroup(
+        List<MatchGroup> matchGroups = createMatchGroups(matchingRoom, type);
+        Set<Member> matchedMembers = extractAllMembersFromMatchGroups(matchGroups);
+
+        matchingInfoService.updateStatusToMatched(matchingRoom.getMatchingInfos(), matchedMembers);
+    }
+
+    private List<MatchGroup> createMatchGroups(MatchingRoom matchingRoom, MatchingType type) {
+        return matchGroupService.savaAllMatchGroup(
                 matchingFactory.getService(type).startMatching(matchingRoom)
         );
+    }
 
-        Set<Member> memberSet = matchGroups.stream()
+    private Set<Member> extractAllMembersFromMatchGroups(List<MatchGroup> matchGroups) {
+        return matchGroups.stream()
                 .flatMap(group -> group.getMembers().stream())
                 .collect(Collectors.toSet());
-
-        matchingInfoService.changeStatusByMatched(matchingRoom.getMatchingInfos(), memberSet);
     }
 }

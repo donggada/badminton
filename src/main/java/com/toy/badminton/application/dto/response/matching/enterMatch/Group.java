@@ -1,4 +1,4 @@
-package com.toy.badminton.application.dto.response.enterMatch;
+package com.toy.badminton.application.dto.response.matching.enterMatch;
 
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
 

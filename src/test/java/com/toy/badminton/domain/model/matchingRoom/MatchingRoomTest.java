@@ -1,5 +1,6 @@
 package com.toy.badminton.domain.model.matchingRoom;
 
+import com.toy.badminton.application.dto.request.ChangeGroupRequest;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
@@ -173,5 +174,22 @@ class MatchingRoomTest {
         ApplicationException exception = assertThrows(ApplicationException.class, () -> testRoom.validateMinActiveMembers(4));
         assertEquals(exception.getMessage(), NOT_ENOUGH_MATCHING_MEMBERS.getMessage());
         assertEquals(exception.getReason(), NOT_ENOUGH_MATCHING_MEMBERS.getReason().formatted(4, 2));
+    }
+
+    @Test
+    @DisplayName("")
+    void validateChangeRequestMembersExist () {
+        ChangeGroupRequest request = new ChangeGroupRequest(1L, 1L, 2L);
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
+
+        MatchingRoom room = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .build();
+
+        assertDoesNotThrow(() -> room.validateChangeRequestMembersExist(request));
     }
 }
