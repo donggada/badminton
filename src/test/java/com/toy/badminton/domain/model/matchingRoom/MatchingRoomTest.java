@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.toy.badminton.infrastructure.exception.ErrorCode.NOT_ENOUGH_MATCHING_MEMBERS;
+import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchingRoomTest {
@@ -177,7 +177,7 @@ class MatchingRoomTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("변경 요청이 정상인 경우 예외 없이 통과한다")
     void validateChangeRequestMembersExist () {
         ChangeGroupRequest request = new ChangeGroupRequest(1L, 1L, 2L);
         Member member1 = Member.builder().id(1L).build();
@@ -191,5 +191,84 @@ class MatchingRoomTest {
                 .build();
 
         assertDoesNotThrow(() -> room.validateChangeRequestMembersExist(request));
+    }
+
+    @Test
+    @DisplayName("요청자가 존재하지 않으면 예외가 발생한다")
+    void validateChangeRequestMembersExist_withRequesterNotFound () {
+        Long groupId = 1L;
+        Long replacementMemberId = 3L;
+        Long targetMemberId = 2L;
+        ChangeGroupRequest request = new ChangeGroupRequest(groupId, replacementMemberId, targetMemberId);
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
+
+        MatchingRoom room = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> room.validateChangeRequestMembersExist(request));
+
+        assertEquals(REQUESTER_NOT_FOUND.getMessage(), exception.getMessage());
+        assertEquals(REQUESTER_NOT_FOUND.getReason().formatted(replacementMemberId), exception.getReason());
+    }
+
+    @Test
+    @DisplayName("교체 대상자가 존재하지 않으면 예외가 발생한다")
+    void validateChangeRequestMembersExist_withTargetNotFound () {
+        Long groupId = 1L;
+        Long replacementMemberId = 1L;
+        Long targetMemberId = 4L;
+        ChangeGroupRequest request = new ChangeGroupRequest(groupId, replacementMemberId, targetMemberId);
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
+
+        MatchingRoom room = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> room.validateChangeRequestMembersExist(request));
+        assertEquals(TARGET_NOT_FOUND.getMessage(), exception.getMessage());
+        assertEquals(TARGET_NOT_FOUND.getReason().formatted(targetMemberId), exception.getReason());
+    }
+
+
+    @Test
+    @DisplayName("이미 존재하는 멤버가 있으면 DUPLICATE_ENTER 예외 발생")
+    void testValidateMemberNotExists_memberAlreadyExists() {
+        // given
+        Member member = Member.builder().id(2L).build();
+
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member).status(MatchingStatus.WAITING).build();
+
+        MatchingRoom room = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1))
+                .build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> room.validateMemberNotExists(member));
+
+        assertEquals(DUPLICATE_ENTER.build(member.getId()).getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 멤버가 있으면 예외가 발생하지 않음")
+    void testValidateMemberNotExists_memberDoesNotExist() {
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
+
+        MatchingRoom room = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1))
+                .build();
+
+        assertDoesNotThrow(() -> room.validateMemberNotExists(member2));
     }
 }

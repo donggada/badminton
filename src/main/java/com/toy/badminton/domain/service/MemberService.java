@@ -21,9 +21,6 @@ public class MemberService {
     }
 
     public Member saveMember(MemberSignupRequest request) {
-//        if (true) {
-//            throw new RuntimeException("test");
-//        }
         return memberRepository.save(Member.createMember(request, passwordEncoder.encode(request.password())));
     }
 
