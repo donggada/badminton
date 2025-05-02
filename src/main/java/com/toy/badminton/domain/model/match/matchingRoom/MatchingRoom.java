@@ -76,7 +76,6 @@ public class MatchingRoom extends BaseTimeEntity {
     }
 
     public void validateManager(Member member) {
-        System.out.println(managerList.contains(member));
         if (!managerList.contains(member)) {
             throw MATCHING_ROOM_EDIT_FORBIDDEN.build(member.getId());
         }
