@@ -1,6 +1,7 @@
 package com.toy.badminton.domain.service;
 
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoomQuerydslRepository;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoomRepository;
 import com.toy.badminton.domain.model.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import static com.toy.badminton.infrastructure.exception.ErrorCode.INVALID_MATCH
 public class MatchingRoomService {
 
     private final MatchingRoomRepository matchingRoomRepository;
+    private final MatchingRoomQuerydslRepository matchingRoomQuerydslRepository;
 
 
     public MatchingRoom createRoom(String name, Member member) {
@@ -20,8 +22,12 @@ public class MatchingRoomService {
     }
 
     public MatchingRoom findMatchingRoom(Long matchingRoomId) {
-        return matchingRoomRepository.findWithAllById(matchingRoomId)
+//        return matchingRoomRepository.findWithAllById(matchingRoomId)
+//                .orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingRoomId));
+
+        return matchingRoomQuerydslRepository.findWithAllById(matchingRoomId)
                 .orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingRoomId));
+
     }
 
     public MatchingRoom findManageMatchingRoom (Long roomId, Member member) {

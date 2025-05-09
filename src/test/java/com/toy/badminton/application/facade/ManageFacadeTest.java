@@ -67,7 +67,7 @@ class ManageFacadeTest {
                 MatchingInfo.builder().member(replacementMember).build()
         );
         MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
-        
+
         given(matchingRoomService.findManageMatchingRoom(roomId, member)).willReturn(matchingRoom);
         given(memberService.findMember(targetMemberId)).willReturn(targetMember);
         given(memberService.findMember(replacementMemberId)).willReturn(replacementMember);
