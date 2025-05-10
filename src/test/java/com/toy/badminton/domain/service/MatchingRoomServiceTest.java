@@ -1,10 +1,9 @@
 package com.toy.badminton.domain.service;
 
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
-import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoomRepository;
+import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoomQuerydslRepository;
 import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.infrastructure.exception.ApplicationException;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class MatchingRoomServiceTest {
 
@@ -28,7 +26,7 @@ class MatchingRoomServiceTest {
     private MatchingRoomService matchingRoomService;
 
     @Mock
-    private MatchingRoomRepository matchingRoomRepository;
+    private MatchingRoomQuerydslRepository matchingRoomQuerydslRepository;
 
     @Test
     @DisplayName("성공 - 매칭방 관리자일 경우 매칭방을 반환한다")
@@ -38,7 +36,7 @@ class MatchingRoomServiceTest {
         Member manager = Member.builder().id(1L).build();
         MatchingRoom room = MatchingRoom.builder().managerList(Set.of(manager)).build();
 
-        given(matchingRoomRepository.findWithAllById(roomId)).willReturn(Optional.of(room));
+        given(matchingRoomQuerydslRepository.findWithAllById(roomId)).willReturn(Optional.of(room));
 
         MatchingRoom result = matchingRoomService.findManageMatchingRoom(roomId, member);
 
@@ -53,7 +51,7 @@ class MatchingRoomServiceTest {
         Member manager = Member.builder().id(2L).username("test").build();
         MatchingRoom room = MatchingRoom.builder().managerList(Set.of(manager)).build();
 
-        given(matchingRoomRepository.findWithAllById(roomId)).willReturn(Optional.of(room));
+        given(matchingRoomQuerydslRepository.findWithAllById(roomId)).willReturn(Optional.of(room));
 
         ApplicationException exception = assertThrows(
                 ApplicationException.class,
@@ -70,7 +68,7 @@ class MatchingRoomServiceTest {
         Long roomId = 1L;
         Member member = Member.builder().id(1L).build();
 
-        given(matchingRoomRepository.findWithAllById(roomId)).willReturn(Optional.empty());
+        given(matchingRoomQuerydslRepository.findWithAllById(roomId)).willReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(
                 ApplicationException.class,

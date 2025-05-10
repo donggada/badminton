@@ -22,9 +22,6 @@ public class MatchingRoomService {
     }
 
     public MatchingRoom findMatchingRoom(Long matchingRoomId) {
-//        return matchingRoomRepository.findWithAllById(matchingRoomId)
-//                .orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingRoomId));
-
         return matchingRoomQuerydslRepository.findWithAllById(matchingRoomId)
                 .orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingRoomId));
 

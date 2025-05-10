@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = "matchingInfos")
 @ToString
 @Builder
 public class Member extends BaseTimeEntity {
