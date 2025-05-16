@@ -24,7 +24,6 @@ public class MatchingRoomService {
     public MatchingRoom findMatchingRoom(Long matchingRoomId) {
         return matchingRoomQuerydslRepository.findWithAllById(matchingRoomId)
                 .orElseThrow(() -> INVALID_MATCHING_ROOM.build(matchingRoomId));
-
     }
 
     public MatchingRoom findManageMatchingRoom (Long roomId, Member member) {
