@@ -2,14 +2,18 @@ package com.toy.badminton.application.controller.match;
 
 import com.toy.badminton.application.dto.request.CreateMatchingRoomRequest;
 import com.toy.badminton.application.dto.response.matching.CreateMatchingRoomResponse;
+import com.toy.badminton.application.dto.response.matching.MatchingRoomResponse;
 import com.toy.badminton.application.dto.response.matching.RoomParticipationResponse;
-import com.toy.badminton.application.dto.response.matching.enterMatch.MatchingRoomResponse;
+import com.toy.badminton.application.dto.response.matching.enterMatch.MatchingRoomDetailResponse;
 import com.toy.badminton.application.facade.MatchingFacade;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.infrastructure.security.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,9 +22,14 @@ public class MatchingController {
 
     private final MatchingFacade matchingFacade;
 
+    @GetMapping("")
+    public List<MatchingRoomResponse> getMatchingRoomList() {
+        return matchingFacade.getMatchingRoomList();
+    }
+
     @GetMapping("/{roomId}")
-    public MatchingRoomResponse getMatchingRoomDetail(@PathVariable Long roomId) {
-        return matchingFacade.getMatchingRoomDetail(roomId);
+    public MatchingRoomDetailResponse getMatchingRoomDetail(@PathVariable Long roomId, @AuthMember Member member) {
+        return matchingFacade.getMatchingRoomDetail(roomId, member);
     }
 
     @PostMapping()
@@ -32,7 +41,7 @@ public class MatchingController {
     }
 
     @PostMapping("/{roomId}")
-    public MatchingRoomResponse enterMatchingRoom(
+    public MatchingRoomDetailResponse enterMatchingRoom(
             @PathVariable Long roomId,
             @AuthMember Member member
     ) {

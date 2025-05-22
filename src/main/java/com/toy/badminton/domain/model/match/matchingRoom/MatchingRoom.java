@@ -110,4 +110,8 @@ public class MatchingRoom extends BaseTimeEntity {
         matchingRoom.managerList.add(member);
         return matchingRoom;
     }
+
+    public boolean isManager(Member member) {
+        return managerList.contains(member);
+    }
 }

@@ -25,7 +25,7 @@ public class MemberService {
     }
 
     public Member authenticateMember(LoginRequest request) {
-        Member member = memberRepository.findByLoginId(request.login()).orElseThrow(() -> INVALID_LOGIN_ID.build(request.login()));
+        Member member = memberRepository.findByLoginId(request.loginId()).orElseThrow(() -> INVALID_LOGIN_ID.build(request.loginId()));
 
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
             throw INVALID_PASSWORD.build();

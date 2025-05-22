@@ -1,21 +1,24 @@
 package com.toy.badminton.application.dto.response.matching.enterMatch;
 
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
+import com.toy.badminton.domain.model.member.Member;
 
 import java.util.List;
 
-public record MatchingRoomResponse(
+public record MatchingRoomDetailResponse(
         Long id,
         String name,
         List<EnterMember> enterMebmerList,
-        List<Group> groupList
+        List<Group> groupList,
+        boolean isManager
 ) {
-    public static MatchingRoomResponse of (MatchingRoom matchingRoom) {
-        return new MatchingRoomResponse(
+    public static MatchingRoomDetailResponse of (MatchingRoom matchingRoom, Member member) {
+        return new MatchingRoomDetailResponse(
                 matchingRoom.getId(),
                 matchingRoom.getName(),
                 matchingRoom.getMatchingInfos().stream().map(EnterMember::of).toList(),
-                matchingRoom.getMatchGroups().stream().map(Group::of).toList()
+                matchingRoom.getMatchGroups().stream().map(Group::of).toList(),
+                matchingRoom.isManager(member)
         );
     }
 }

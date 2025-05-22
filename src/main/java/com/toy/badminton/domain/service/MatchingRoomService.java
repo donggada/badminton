@@ -7,6 +7,10 @@ import com.toy.badminton.domain.model.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
 import static com.toy.badminton.infrastructure.exception.ErrorCode.INVALID_MATCHING_ROOM;
 
 @Service
@@ -30,5 +34,11 @@ public class MatchingRoomService {
         MatchingRoom matchingRoom = findMatchingRoom(roomId);
         matchingRoom.validateManager(member);
         return matchingRoom;
+    }
+
+    public List<MatchingRoom> findMatchingRoomList() {
+        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);
+        return matchingRoomQuerydslRepository.findMatchingRoomsWithActiveMembers(startOfDay, endOfDay);
     }
 }
