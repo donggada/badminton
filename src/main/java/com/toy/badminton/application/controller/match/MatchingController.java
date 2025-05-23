@@ -34,7 +34,7 @@ public class MatchingController {
 
     @PostMapping()
     public CreateMatchingRoomResponse createRoom(
-            CreateMatchingRoomRequest request,
+            @RequestBody CreateMatchingRoomRequest request,
             @AuthMember Member member
     ) {
         return matchingFacade.createRoom(request, member);
