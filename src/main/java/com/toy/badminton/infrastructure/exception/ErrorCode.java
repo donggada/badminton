@@ -24,9 +24,8 @@ public enum ErrorCode {
     MATCHING_ROOM_EDIT_FORBIDDEN(HttpStatus.CONFLICT, "매칭 수정권한이 없습니다.", "member_id: %d"),
     REQUESTER_NOT_FOUND(HttpStatus.CONFLICT, "요청자가 매칭방에 존재하지 않습니다.", "member_id: %d"),
     TARGET_NOT_FOUND(HttpStatus.CONFLICT, "교체 대상 멤버를 찾을 수 없습니다.", "member_id: %d"),
-
-    NOT_ENOUGH_MATCHING_MEMBERS(HttpStatus.CONFLICT, "매칭 가능한 멤버 수가 부족합니다.", "min_size: %d, current_size: %d");
-
+    NOT_ENOUGH_MATCHING_MEMBERS(HttpStatus.CONFLICT, "매칭 가능한 멤버 수가 부족합니다.", "min_size: %d, current_size: %d"),
+    WITHDRAWN_MEMBER(HttpStatus.CONFLICT, "탈퇴한 회원입니다.", "member_id: %d");
 
     private final HttpStatus httpStatus;
     private final String message;
