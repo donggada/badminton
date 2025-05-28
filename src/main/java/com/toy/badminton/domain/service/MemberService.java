@@ -30,8 +30,7 @@ public class MemberService {
 
     @Transactional
     public void updatePassword(UpdatePasswordRequest request, Member member) {
-        findByMemberId(member.getId())
-                .updatePassword(passwordEncoder.encode(request.newPassword()));
+        findByMemberId(member.getId()).updatePassword(passwordEncoder.encode(request.newPassword()));
     }
 
     @Transactional
@@ -49,6 +48,8 @@ public class MemberService {
             throw INVALID_PASSWORD.build();
         }
 
+        member.validateNotDeleted();
+
         return member;
     }
 
@@ -57,11 +58,6 @@ public class MemberService {
             throw DUPLICATE_LOGIN_ID.build(request.loginId());
         }
     }
-
-//    public Member findMemberByLoginId(String loginId) {
-//        return memberRepository.findByUsername(loginId)
-//                .orElseThrow(() -> MEMBER_NOT_FOUND.build(loginId));
-//    }
 
     @Transactional
     public void deleteMember(Member member) {

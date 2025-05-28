@@ -2,6 +2,7 @@ package com.toy.badminton.infrastructure.security;
 
 
 
+import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.domain.model.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,10 +20,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String loginId) {
-        return new CustomUserDetails(
-                memberRepository.findTokenCheckByLoginId(loginId)
-                        .orElseThrow(() -> MEMBER_NOT_FOUND.build(loginId))
-        ); // UserDetails 구현체 반환
+        Member member = memberRepository.findTokenCheckByLoginId(loginId)
+                .orElseThrow(() -> MEMBER_NOT_FOUND.build(loginId));
+        member.validateNotDeleted();
+        return new CustomUserDetails(member);
     }
 }
 

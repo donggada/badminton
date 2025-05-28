@@ -4,6 +4,7 @@ import com.toy.badminton.application.dto.request.MemberSignupRequest;
 import com.toy.badminton.application.dto.request.member.UpdateMemberProfileRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
+import com.toy.badminton.infrastructure.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -83,5 +84,11 @@ public class Member extends BaseTimeEntity {
 
     public void markAsDeleted() {
         this.isDeleted = true;
+    }
+
+    public void validateNotDeleted() {
+        if (isDeleted) {
+            throw ErrorCode.WITHDRAWN_MEMBER.build(id);
+        }
     }
 }
