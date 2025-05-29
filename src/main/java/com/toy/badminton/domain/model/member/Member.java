@@ -39,9 +39,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Level level;
 
-    @Column(unique = true)
-    private String email;
-
     private String profileImage;
 
     @Builder.Default
@@ -49,6 +46,7 @@ public class Member extends BaseTimeEntity {
     private List<MatchingInfo> matchingInfos = new ArrayList<>();
 
     @Builder.Default
+    @Column(name = "deleted")
     private boolean isDeleted = false;
 
     public String getLevelDescription() {

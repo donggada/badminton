@@ -7,9 +7,8 @@ import java.time.LocalDateTime;
 public record MemberProfileResponse(
         Long id,
         String name,
-        String email,
         String profileImage,
-        int level,
+        String level,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -17,9 +16,8 @@ public record MemberProfileResponse(
         return new MemberProfileResponse(
                 member.getId(),
                 member.getUsername(),
-                member.getEmail(),
                 member.getProfileImage(),
-                member.getLevelValue(),
+                member.getLevelDescription(),
                 member.getCreatedDate(),
                 member.getUpdatedDate()
         );
