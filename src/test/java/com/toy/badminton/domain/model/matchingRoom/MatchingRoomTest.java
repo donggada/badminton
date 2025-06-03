@@ -240,36 +240,36 @@ class MatchingRoomTest {
     }
 
 
-    @Test
-    @DisplayName("이미 존재하는 멤버가 있으면 DUPLICATE_ENTER 예외 발생")
-    void testValidateMemberNotExists_memberAlreadyExists() {
-        // given
-        Member member = Member.builder().id(2L).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom room = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1))
-                .build();
-
-        ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> room.validateMemberNotExists(member));
-
-        assertEquals(DUPLICATE_ENTER.build(member.getId()).getMessage(), exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 멤버가 있으면 예외가 발생하지 않음")
-    void testValidateMemberNotExists_memberDoesNotExist() {
-        Member member1 = Member.builder().id(1L).build();
-        Member member2 = Member.builder().id(2L).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom room = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1))
-                .build();
-
-        assertDoesNotThrow(() -> room.validateMemberNotExists(member2));
-    }
+//    @Test
+//    @DisplayName("이미 존재하는 멤버가 있으면 DUPLICATE_ENTER 예외 발생")
+//    void testValidateMemberNotExists_memberAlreadyExists() {
+//        // given
+//        Member member = Member.builder().id(2L).build();
+//
+//        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member).status(MatchingStatus.WAITING).build();
+//
+//        MatchingRoom room = MatchingRoom.builder()
+//                .matchingInfos(List.of(matchingInfo1))
+//                .build();
+//
+//        ApplicationException exception = assertThrows(ApplicationException.class,
+//                () -> room.validateMemberNotExists(member));
+//
+//        assertEquals(DUPLICATE_ENTER.build(member.getId()).getMessage(), exception.getMessage());
+//    }
+//
+//    @Test
+//    @DisplayName("존재하지 않는 멤버가 있으면 예외가 발생하지 않음")
+//    void testValidateMemberNotExists_memberDoesNotExist() {
+//        Member member1 = Member.builder().id(1L).build();
+//        Member member2 = Member.builder().id(2L).build();
+//
+//        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
+//
+//        MatchingRoom room = MatchingRoom.builder()
+//                .matchingInfos(List.of(matchingInfo1))
+//                .build();
+//
+//        assertDoesNotThrow(() -> room.validateMemberNotExists(member2));
+//    }
 }

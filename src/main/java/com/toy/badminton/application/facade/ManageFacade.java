@@ -33,9 +33,9 @@ public class ManageFacade {
 
     public void replaceMatchGroupMember(Long roomId, Member member, ChangeGroupRequest request) {
         MatchingRoom matchingRoom = matchingRoomService.findManageMatchingRoom(roomId, member);
-        matchingRoom.validateChangeRequestMembersExist(request);
         Member replacementMember = memberService.findMember(request.replacementMemberId());
         Member targetMember = memberService.findMember(request.targetMemberId());
+        matchingRoom.validateChangeRequestMembersExist(request);
         matchGroupService.replaceMatchGroupMember(request.groupId(), targetMember ,replacementMember);
     }
 

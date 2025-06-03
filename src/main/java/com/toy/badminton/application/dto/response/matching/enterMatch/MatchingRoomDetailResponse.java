@@ -8,6 +8,7 @@ import java.util.List;
 public record MatchingRoomDetailResponse(
         Long id,
         String name,
+        String entryCode,
         List<EnterMember> enterMebmerList,
         List<Group> groupList,
         boolean isManager
@@ -16,6 +17,7 @@ public record MatchingRoomDetailResponse(
         return new MatchingRoomDetailResponse(
                 matchingRoom.getId(),
                 matchingRoom.getName(),
+                matchingRoom.getEntryCode(),
                 matchingRoom.getMatchingInfos().stream().map(EnterMember::of).toList(),
                 matchingRoom.getMatchGroups().stream().map(Group::of).toList(),
                 matchingRoom.isManager(member)

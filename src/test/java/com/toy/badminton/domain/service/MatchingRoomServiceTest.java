@@ -36,7 +36,7 @@ class MatchingRoomServiceTest {
         Member manager = Member.builder().id(1L).build();
         MatchingRoom room = MatchingRoom.builder().managerList(Set.of(manager)).build();
 
-        given(matchingRoomQuerydslRepository.findWithAllById(roomId)).willReturn(Optional.of(room));
+        given(matchingRoomQuerydslRepository.findRoomWithDetailsById(roomId)).willReturn(Optional.of(room));
 
         MatchingRoom result = matchingRoomService.findManageMatchingRoom(roomId, member);
 
@@ -51,7 +51,7 @@ class MatchingRoomServiceTest {
         Member manager = Member.builder().id(2L).username("test").build();
         MatchingRoom room = MatchingRoom.builder().managerList(Set.of(manager)).build();
 
-        given(matchingRoomQuerydslRepository.findWithAllById(roomId)).willReturn(Optional.of(room));
+        given(matchingRoomQuerydslRepository.findRoomWithDetailsById(roomId)).willReturn(Optional.of(room));
 
         ApplicationException exception = assertThrows(
                 ApplicationException.class,
@@ -68,7 +68,7 @@ class MatchingRoomServiceTest {
         Long roomId = 1L;
         Member member = Member.builder().id(1L).build();
 
-        given(matchingRoomQuerydslRepository.findWithAllById(roomId)).willReturn(Optional.empty());
+        given(matchingRoomQuerydslRepository.findRoomWithDetailsById(roomId)).willReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(
                 ApplicationException.class,

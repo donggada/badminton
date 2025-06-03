@@ -61,6 +61,10 @@ public class MatchingInfo extends BaseTimeEntity {
         return Objects.equals(member.getId(), memberId);
     }
 
+    public boolean isMember(Member member) {
+        return this.member.equals(member);
+    }
+
     public String getMessage() {
         return status.getDescription();
     }

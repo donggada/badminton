@@ -28,9 +28,6 @@ public class MatchingInfoService {
         return matchingInfo;
     }
 
-    public MatchingInfo saveMatchingInfo(MatchingRoom matchingRoom, Member member) {
-        return matchingInfoRepository.save(MatchingInfo.createMatchingInfo(matchingRoom, member));
-    }
 
     public void updateStatusToMatched(List<MatchingInfo> matchingInfos, Set<Member> meberSet) {
         matchingInfos.stream()

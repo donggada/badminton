@@ -1,20 +1,17 @@
 package com.toy.badminton.domain.model.match.matchingRoom;
 
 import com.toy.badminton.application.dto.request.ChangeGroupRequest;
-import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
+import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.infrastructure.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
@@ -32,6 +29,12 @@ public class MatchingRoom extends BaseTimeEntity {
     private Long id;
 
     private String name;
+
+    @Column(unique = true)
+    private String entryCode;
+
+    @Builder.Default
+    private boolean isActive = true;
 
     @Builder.Default
     @BatchSize(size = 50)
@@ -93,11 +96,30 @@ public class MatchingRoom extends BaseTimeEntity {
                 .orElseThrow(() -> code.build(memberId));
     }
 
-    public void validateMemberNotExists(Member member) {
-        matchingInfos.stream()
+
+//    public void validateMemberNotExists(Member member) {
+//        matchingInfos.stream()
+//                .filter(info -> info.hasMemberId(member.getId()))
+//                .findAny()
+//                .ifPresent(info -> { throw DUPLICATE_ENTER.build(member.getId()); });
+//    }
+
+    public void addMember(Member member) {
+        Optional<MatchingInfo> existingInfo = findMatchingInfoByMember(member);
+
+        if (existingInfo.isPresent()) {
+            existingInfo.get().changeStatus(MatchingStatus.WAITING);
+            return;
+        }
+
+        matchingInfos.add(MatchingInfo.createMatchingInfo(this, member));
+    }
+
+
+    private Optional<MatchingInfo> findMatchingInfoByMember(Member member) {
+        return matchingInfos.stream()
                 .filter(info -> info.hasMemberId(member.getId()))
-                .findAny()
-                .ifPresent(info -> { throw DUPLICATE_ENTER.build(member.getId()); });
+                .findFirst();
     }
 
     public void updateRoomInfo(String roomName, Set<Member> memberSet) {
@@ -107,11 +129,31 @@ public class MatchingRoom extends BaseTimeEntity {
 
     public static MatchingRoom createMatchingRoom(String name, Member member) {
         MatchingRoom matchingRoom = new MatchingRoom(name);
+        matchingRoom.entryCode = generateEntryCode();
+        matchingRoom.isActive = true;
         matchingRoom.managerList.add(member);
         return matchingRoom;
     }
 
+    private static String generateEntryCode() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
     public boolean isManager(Member member) {
         return managerList.contains(member);
+    }
+
+    public void deactivate() {
+        this.isActive = false;
+    }
+
+    public void activate() {
+        this.isActive = true;
+    }
+
+    public void validateRoomActive() {
+        if (!isActive) {
+            throw INACTIVE_MATCHING_ROOM.build(this.id);
+        }
     }
 }

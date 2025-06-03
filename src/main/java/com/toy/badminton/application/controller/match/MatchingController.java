@@ -48,6 +48,14 @@ public class MatchingController {
         return matchingFacade.enterMatchingRoom(roomId, member);
     }
 
+    @PostMapping("entry-code/{entryCode}")
+    public MatchingRoomDetailResponse enterCodeMatchingRoom(
+            @PathVariable String entryCode,
+            @AuthMember Member member
+    ) {
+        return matchingFacade.enterCodeMatchingRoom(entryCode, member);
+    }
+
     @PatchMapping("/{roomId}")
     public RoomParticipationResponse changeMatchingStatus(
             @PathVariable Long roomId,

@@ -5,6 +5,7 @@ import com.toy.badminton.application.dto.response.matching.CreateMatchingRoomRes
 import com.toy.badminton.application.dto.response.matching.MatchingRoomResponse;
 import com.toy.badminton.application.dto.response.matching.RoomParticipationResponse;
 import com.toy.badminton.application.dto.response.matching.enterMatch.MatchingRoomDetailResponse;
+import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
@@ -30,7 +31,7 @@ public class MatchingFacade {
     public RoomParticipationResponse changeMatchingStatus (Long matchingRoomId, Member member, MatchingStatus status) {
         return RoomParticipationResponse.of(
                 matchingInfoService.changeMatchingStatus(
-                        matchingRoomService.findMatchingRoom(matchingRoomId),
+                        matchingRoomService.findActiveRoom(matchingRoomId),
                         member,
                         status
                 )
@@ -39,14 +40,20 @@ public class MatchingFacade {
 
     @Transactional
     public MatchingRoomDetailResponse enterMatchingRoom(Long roomId, Member member) {
-        MatchingRoom matchingRoom = matchingRoomService.findMatchingRoom(roomId);
-        matchingRoom.validateMemberNotExists(member);
-        matchingRoom.getMatchingInfos().add(matchingInfoService.saveMatchingInfo(matchingRoom, member));
+        MatchingRoom matchingRoom = matchingRoomService.findActiveRoom(roomId);
+        matchingRoom.addMember(member);
+        return MatchingRoomDetailResponse.of(matchingRoom, member);
+    }
+
+    @Transactional
+    public MatchingRoomDetailResponse enterCodeMatchingRoom(String entryCode, Member member) {
+        MatchingRoom matchingRoom = matchingRoomService.findActiveRoomByEntryCode(entryCode);
+        matchingRoom.addMember(member);
         return MatchingRoomDetailResponse.of(matchingRoom, member);
     }
 
     public MatchingRoomDetailResponse getMatchingRoomDetail(Long roomId, Member member) {
-        return MatchingRoomDetailResponse.of(matchingRoomService.findMatchingRoom(roomId), member);
+        return MatchingRoomDetailResponse.of(matchingRoomService.findActiveRoom(roomId), member);
     }
 
     @Transactional(readOnly = true)

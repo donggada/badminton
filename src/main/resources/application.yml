@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: default
   datasource:
     url: jdbc:mariadb://localhost:33306/badminton?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
     driver-class-name: org.mariadb.jdbc.Driver
