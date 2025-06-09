@@ -1,12 +1,11 @@
 package com.toy.badminton.application.facade;
 
+import com.toy.badminton.application.dto.request.ChangeMatchingStatusRequest;
 import com.toy.badminton.application.dto.request.CreateMatchingRoomRequest;
 import com.toy.badminton.application.dto.response.matching.CreateMatchingRoomResponse;
 import com.toy.badminton.application.dto.response.matching.MatchingRoomResponse;
-import com.toy.badminton.application.dto.response.matching.RoomParticipationResponse;
 import com.toy.badminton.application.dto.response.matching.enterMatch.MatchingRoomDetailResponse;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.domain.service.MatchingInfoService;
@@ -22,33 +21,29 @@ import java.util.List;
 public class MatchingFacade {
 
     private final MatchingRoomService matchingRoomService;
-    private final MatchingInfoService matchingInfoService;
+
 
     public CreateMatchingRoomResponse createRoom(CreateMatchingRoomRequest request, Member member) {
         return CreateMatchingRoomResponse.of(matchingRoomService.createRoom(request.roomName(), member));
     }
 
-    public RoomParticipationResponse changeMatchingStatus (Long matchingRoomId, Member member, MatchingStatus status) {
-        return RoomParticipationResponse.of(
-                matchingInfoService.changeMatchingStatus(
-                        matchingRoomService.findActiveRoom(matchingRoomId),
-                        member,
-                        status
-                )
-        );
+    @Transactional
+    public void changeMatchingStatus (Long matchingRoomId, Member member, ChangeMatchingStatusRequest request) {
+        MatchingRoom matchingRoom = matchingRoomService.findActiveRoom(matchingRoomId);
+        matchingRoom.changeMatchingStatus(member, request.status());
     }
 
     @Transactional
     public MatchingRoomDetailResponse enterMatchingRoom(Long roomId, Member member) {
         MatchingRoom matchingRoom = matchingRoomService.findActiveRoom(roomId);
-        matchingRoom.addMember(member);
+        matchingRoom.addMember(member, MatchingInfo.createMatchingInfo(matchingRoom, member));
         return MatchingRoomDetailResponse.of(matchingRoom, member);
     }
 
     @Transactional
     public MatchingRoomDetailResponse enterCodeMatchingRoom(String entryCode, Member member) {
         MatchingRoom matchingRoom = matchingRoomService.findActiveRoomByEntryCode(entryCode);
-        matchingRoom.addMember(member);
+        matchingRoom.addMember(member, MatchingInfo.createMatchingInfo(matchingRoom, member));
         return MatchingRoomDetailResponse.of(matchingRoom, member);
     }
 
@@ -60,4 +55,5 @@ public class MatchingFacade {
     public List<MatchingRoomResponse> getMatchingRoomList() {
         return matchingRoomService.findMatchingRoomList().stream().map(MatchingRoomResponse::of).toList();
     }
+
 }

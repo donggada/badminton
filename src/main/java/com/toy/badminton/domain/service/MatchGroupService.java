@@ -21,7 +21,6 @@ public class MatchGroupService {
         return matchGroupRepository.saveAll(matchGroupList);
     }
 
-    @Transactional
     public void replaceMatchGroupMember(Long matchGroupId, Member targetMember, Member replacementMember) {
         matchGroupRepository.findById(matchGroupId)
                 .orElseThrow(() -> INVALID_MATCHING_GROUP.build(matchGroupId))

@@ -1,6 +1,6 @@
 package com.toy.badminton.domain.model.match.matchingRoom;
 
-import com.toy.badminton.application.dto.request.ChangeGroupRequest;
+import com.toy.badminton.application.dto.request.manager.ChangeGroupRequest;
 import com.toy.badminton.domain.model.BaseTimeEntity;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
@@ -14,6 +14,7 @@ import org.hibernate.annotations.BatchSize;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.toy.badminton.domain.factory.matching.MatchService.DOUBLES;
 import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 
 @Entity
@@ -38,17 +39,17 @@ public class MatchingRoom extends BaseTimeEntity {
 
     @Builder.Default
     @BatchSize(size = 50)
-    @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<MatchingInfo> matchingInfos = new ArrayList<>();
 
     @Builder.Default
     @BatchSize(size = 50)
-    @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<MatchGroup> matchGroups = new ArrayList<>();
 
     @Builder.Default
     @BatchSize(size = 50)
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "matching_room_manager_members",
             joinColumns = @JoinColumn(name = "room_id"),
@@ -96,15 +97,7 @@ public class MatchingRoom extends BaseTimeEntity {
                 .orElseThrow(() -> code.build(memberId));
     }
 
-
-//    public void validateMemberNotExists(Member member) {
-//        matchingInfos.stream()
-//                .filter(info -> info.hasMemberId(member.getId()))
-//                .findAny()
-//                .ifPresent(info -> { throw DUPLICATE_ENTER.build(member.getId()); });
-//    }
-
-    public void addMember(Member member) {
+    public void addMember(Member member, MatchingInfo matchingInfo) {
         Optional<MatchingInfo> existingInfo = findMatchingInfoByMember(member);
 
         if (existingInfo.isPresent()) {
@@ -112,13 +105,65 @@ public class MatchingRoom extends BaseTimeEntity {
             return;
         }
 
-        matchingInfos.add(MatchingInfo.createMatchingInfo(this, member));
+        matchingInfos.add(matchingInfo);
+    }
+    public void addGroup(MatchGroup matchGroup) {
+        validateAddGroupMemberCount(matchGroup);
+        validateAddGroupMemberAllInRoom(matchGroup);
+        matchGroups.add(matchGroup);
     }
 
+    private void validateAddGroupMemberAllInRoom(MatchGroup matchGroup) {
+        matchGroup.getMembers().forEach(this::validateMemberInRoom);
+    }
+
+    private void validateAddGroupMemberCount(MatchGroup matchGroup) {
+        int addCount = new HashSet<>(matchGroup.getMembers()).size();
+
+        if (addCount != DOUBLES) {
+            throw NOT_ENOUGH_MATCHING_MEMBERS.build(DOUBLES, addCount);
+        }
+    }
+
+    public void addMangerRole(Member targetMember) {
+        validateMemberInRoom(targetMember);
+        managerList.add(targetMember);
+    }
+
+    public void removeManagerRole(Member requesterMember, Member targetMember) {
+        validateOwnerPermission(requesterMember);
+        validateMemberInRoom(targetMember);
+        managerList.remove(targetMember);
+    }
+
+    private void validateMemberInRoom(Member member) {
+        matchingInfos.stream()
+                .filter(info -> info.isMember(member))
+                .findAny()
+                .orElseThrow(() -> MEMBER_NOT_IN_ROOM.build(member.getId()));
+    }
+
+    public void deactivateMatchingRoom (Member requesterMember) {
+        validateOwnerPermission(requesterMember);
+        this.isActive = false;
+    }
+
+    private void validateOwnerPermission(Member member) {
+        if (!Objects.equals(getCreatedId(), member.getId())) {
+            throw MANAGER_PERMISSION_DENIED.build(member.getId());
+        }
+    }
+
+    public void changeMatchingStatus(Member member, MatchingStatus status) {
+        MatchingInfo existingInfo = findMatchingInfoByMember(member)
+                .orElseThrow(() -> INVALID_MATCHING_ROOM_INFO.build(id, member.getId()));
+
+        existingInfo.changeStatus(status);
+    }
 
     private Optional<MatchingInfo> findMatchingInfoByMember(Member member) {
         return matchingInfos.stream()
-                .filter(info -> info.hasMemberId(member.getId()))
+                .filter(info -> info.isMember(member))
                 .findFirst();
     }
 
@@ -143,9 +188,6 @@ public class MatchingRoom extends BaseTimeEntity {
         return managerList.contains(member);
     }
 
-    public void deactivate() {
-        this.isActive = false;
-    }
 
     public void activate() {
         this.isActive = true;

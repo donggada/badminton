@@ -5,7 +5,6 @@ import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
 import com.toy.badminton.domain.model.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -34,6 +33,7 @@ public class MatchingInfo extends BaseTimeEntity {
     private Member member;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MatchingStatus status;
 
     private LocalDateTime leaveDate;
@@ -46,7 +46,11 @@ public class MatchingInfo extends BaseTimeEntity {
     }
 
     public boolean isWaiting() {
-        return status.equals(WAITING);
+        return status == WAITING;
+    }
+
+    public boolean isInRoom() {
+        return status != LEFT_ROOM;
     }
 
     public String getMatchingRoomName() {
@@ -65,9 +69,10 @@ public class MatchingInfo extends BaseTimeEntity {
         return this.member.equals(member);
     }
 
-    public String getMessage() {
+    public String getStatusDescription() {
         return status.getDescription();
     }
+
 
     public static MatchingInfo createMatchingInfo(MatchingRoom matchingRoom, Member member) {
         return new MatchingInfo(matchingRoom, member);

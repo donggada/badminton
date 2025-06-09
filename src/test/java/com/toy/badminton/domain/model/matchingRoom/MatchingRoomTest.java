@@ -1,6 +1,6 @@
 package com.toy.badminton.domain.model.matchingRoom;
 
-import com.toy.badminton.application.dto.request.ChangeGroupRequest;
+import com.toy.badminton.application.dto.request.manager.ChangeGroupRequest;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
 import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -180,7 +179,7 @@ class MatchingRoomTest {
     @Test
     @DisplayName("변경 요청이 정상인 경우 예외 없이 통과한다")
     void validateChangeRequestMembersExist () {
-        ChangeGroupRequest request = new ChangeGroupRequest(1L, 1L, 2L);
+        ChangeGroupRequest request = new ChangeGroupRequest(1L, 2L);
         Member member1 = Member.builder().id(1L).build();
         Member member2 = Member.builder().id(2L).build();
 
@@ -200,7 +199,7 @@ class MatchingRoomTest {
         Long groupId = 1L;
         Long replacementMemberId = 3L;
         Long targetMemberId = 2L;
-        ChangeGroupRequest request = new ChangeGroupRequest(groupId, replacementMemberId, targetMemberId);
+        ChangeGroupRequest request = new ChangeGroupRequest(replacementMemberId, targetMemberId);
         Member member1 = Member.builder().id(1L).build();
         Member member2 = Member.builder().id(2L).build();
 
@@ -223,7 +222,7 @@ class MatchingRoomTest {
         Long groupId = 1L;
         Long replacementMemberId = 1L;
         Long targetMemberId = 4L;
-        ChangeGroupRequest request = new ChangeGroupRequest(groupId, replacementMemberId, targetMemberId);
+        ChangeGroupRequest request = new ChangeGroupRequest(replacementMemberId, targetMemberId);
         Member member1 = Member.builder().id(1L).build();
         Member member2 = Member.builder().id(2L).build();
 

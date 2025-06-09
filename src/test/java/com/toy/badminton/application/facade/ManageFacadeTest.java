@@ -1,6 +1,7 @@
 package com.toy.badminton.application.facade;
 
-import com.toy.badminton.application.dto.request.ChangeGroupRequest;
+import com.toy.badminton.application.dto.param.ChangeGroupParameters;
+import com.toy.badminton.application.dto.request.manager.ChangeGroupRequest;
 import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.domain.factory.matching.BalancedMatchingService;
 import com.toy.badminton.domain.factory.matching.MatchingFactory;
@@ -15,7 +16,7 @@ import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.domain.service.MatchGroupService;
 import com.toy.badminton.domain.service.MatchingInfoService;
 import com.toy.badminton.domain.service.MatchingRoomService;
-import com.toy.badminton.domain.service.MemberService;
+import com.toy.badminton.domain.service.member.MemberServiceImp;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ class ManageFacadeTest {
     @Mock
     private MatchingRoomService matchingRoomService;
     @Mock
-    private MemberService memberService;
+    private MemberServiceImp memberServiceImp;
     @Mock
     private MatchGroupService matchGroupService;
     @Mock
@@ -59,7 +60,7 @@ class ManageFacadeTest {
         Member member = Member.builder().id(1L).build();
         Member targetMember = Member.builder().id(targetMemberId).build();
         Member replacementMember = Member.builder().id(replacementMemberId).build();
-        ChangeGroupRequest request = new ChangeGroupRequest(groupId, replacementMemberId, targetMemberId);
+        ChangeGroupRequest request = new ChangeGroupRequest(replacementMemberId, targetMemberId);
 
         List<MatchingInfo> matchingInfos = List.of(
                 MatchingInfo.builder().member(member).build(),
@@ -69,10 +70,17 @@ class ManageFacadeTest {
         MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
 
         given(matchingRoomService.findManageMatchingRoom(roomId, member)).willReturn(matchingRoom);
-        given(memberService.findMember(targetMemberId)).willReturn(targetMember);
-        given(memberService.findMember(replacementMemberId)).willReturn(replacementMember);
+        given(memberServiceImp.findMember(targetMemberId)).willReturn(targetMember);
+        given(memberServiceImp.findMember(replacementMemberId)).willReturn(replacementMember);
 
-        manageFacade.replaceMatchGroupMember(roomId, member, request);
+        ChangeGroupParameters parameters = ChangeGroupParameters.builder()
+                .roomId(roomId)
+                .groupId(groupId)
+                .member(member)
+                .request(request)
+                .build();
+
+        manageFacade.replaceMatchGroupMember(parameters);
 
         verify(matchGroupService).replaceMatchGroupMember(groupId, targetMember, replacementMember);
     }
@@ -93,8 +101,8 @@ class ManageFacadeTest {
         MatchingRoom matchingRoom = MatchingRoom.builder().id(roomId).name("없음").managerList(managers).build();
 
         RoomParticipationRequest request = new RoomParticipationRequest("테스트", Set.of(2L, 3L));
-        given(memberService.findMember(2L)).willReturn(member1);
-        given(memberService.findMember(3L)).willReturn(member2);
+        given(memberServiceImp.findMember(2L)).willReturn(member1);
+        given(memberServiceImp.findMember(3L)).willReturn(member2);
         given(matchingRoomService.findManageMatchingRoom(roomId, member)).willReturn(matchingRoom);
 
         manageFacade.participationRoom(roomId, member, request);

@@ -18,7 +18,7 @@ public record MatchingRoomDetailResponse(
                 matchingRoom.getId(),
                 matchingRoom.getName(),
                 matchingRoom.getEntryCode(),
-                matchingRoom.getMatchingInfos().stream().map(EnterMember::of).toList(),
+                matchingRoom.getMatchingInfos().stream().map(info -> EnterMember.of(info, matchingRoom.getManagerList())).toList(),
                 matchingRoom.getMatchGroups().stream().map(Group::of).toList(),
                 matchingRoom.isManager(member)
         );

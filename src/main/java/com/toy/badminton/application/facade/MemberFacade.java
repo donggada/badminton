@@ -9,13 +9,15 @@ import com.toy.badminton.application.dto.response.LoginResponse;
 import com.toy.badminton.application.dto.response.MemberSignupResponse;
 import com.toy.badminton.application.dto.response.member.MemberProfileResponse;
 import com.toy.badminton.domain.model.member.Member;
-import com.toy.badminton.domain.service.MemberService;
+import com.toy.badminton.domain.service.member.MemberService;
 import com.toy.badminton.infrastructure.exception.ErrorCode;
 import com.toy.badminton.infrastructure.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+;
 
 @Service
 @RequiredArgsConstructor

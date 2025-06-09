@@ -1,7 +1,6 @@
-package com.toy.badminton.application.dto.request;
+package com.toy.badminton.application.dto.request.manager;
 
 public record ChangeGroupRequest(
-        Long groupId,
         Long replacementMemberId,
         Long targetMemberId
 ) {

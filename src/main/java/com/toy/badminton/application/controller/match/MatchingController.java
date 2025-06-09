@@ -1,18 +1,16 @@
 package com.toy.badminton.application.controller.match;
 
+import com.toy.badminton.application.dto.request.ChangeMatchingStatusRequest;
 import com.toy.badminton.application.dto.request.CreateMatchingRoomRequest;
 import com.toy.badminton.application.dto.response.matching.CreateMatchingRoomResponse;
 import com.toy.badminton.application.dto.response.matching.MatchingRoomResponse;
-import com.toy.badminton.application.dto.response.matching.RoomParticipationResponse;
 import com.toy.badminton.application.dto.response.matching.enterMatch.MatchingRoomDetailResponse;
 import com.toy.badminton.application.facade.MatchingFacade;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
 import com.toy.badminton.domain.model.member.Member;
 import com.toy.badminton.infrastructure.security.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,6 +22,7 @@ public class MatchingController {
 
     @GetMapping("")
     public List<MatchingRoomResponse> getMatchingRoomList() {
+        //todo Front 2번 호출 수정필요
         return matchingFacade.getMatchingRoomList();
     }
 
@@ -48,7 +47,7 @@ public class MatchingController {
         return matchingFacade.enterMatchingRoom(roomId, member);
     }
 
-    @PostMapping("entry-code/{entryCode}")
+    @PostMapping("entry/{entryCode}")
     public MatchingRoomDetailResponse enterCodeMatchingRoom(
             @PathVariable String entryCode,
             @AuthMember Member member
@@ -56,13 +55,13 @@ public class MatchingController {
         return matchingFacade.enterCodeMatchingRoom(entryCode, member);
     }
 
-    @PatchMapping("/{roomId}")
-    public RoomParticipationResponse changeMatchingStatus(
+    @PatchMapping("/{roomId}/status")
+    public void changeMatchingStatus(
             @PathVariable Long roomId,
             @AuthMember Member member,
-            MatchingStatus status
+            @RequestBody ChangeMatchingStatusRequest request
     ) {
-        return matchingFacade.changeMatchingStatus(roomId, member, status);
+        matchingFacade.changeMatchingStatus(roomId, member, request);
     }
 
 }
