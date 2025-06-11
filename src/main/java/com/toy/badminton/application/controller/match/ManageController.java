@@ -4,6 +4,7 @@ import com.toy.badminton.application.dto.param.ChangeGroupParameters;
 import com.toy.badminton.application.dto.request.manager.ChangeGroupRequest;
 import com.toy.badminton.application.dto.request.RoomParticipationRequest;
 import com.toy.badminton.application.dto.request.manager.CustomGroupingRequest;
+import com.toy.badminton.application.dto.request.manager.GroupStatusChangeRequest;
 import com.toy.badminton.application.dto.request.manager.StartMatchingRequest;
 import com.toy.badminton.application.facade.ManageFacade;
 import com.toy.badminton.domain.factory.matching.MatchingType;
@@ -35,6 +36,7 @@ public class ManageController {
                 .member(member)
                 .request(request)
                 .build();
+
         manageFacade.replaceMatchGroupMember(parameters);
         return noContent();
     }
@@ -94,6 +96,16 @@ public class ManageController {
             @AuthMember Member member
     ) {
         manageFacade.customMatching(roomId, member, request);
+        return noContent();
+    }
+
+    @PatchMapping("/{roomId}/groups/status")
+    public ResponseEntity<Void> changeGroupStatus(
+            @PathVariable Long roomId,
+            @RequestBody @Valid GroupStatusChangeRequest request,
+            @AuthMember Member member
+    ) {
+        manageFacade.changeGroupStatus(roomId, member, request);
         return noContent();
     }
 

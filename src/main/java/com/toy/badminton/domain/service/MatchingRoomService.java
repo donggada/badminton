@@ -69,27 +69,5 @@ public class MatchingRoomService {
         });
     }
 
-    @Transactional
-    public void addManagerRole(Long roomId, Member targetMember, Member requesterMember) {
-        MatchingRoom matchingRoom = findManageMatchingRoom(roomId, requesterMember);
-        matchingRoom.addMangerRole(targetMember);
-    }
-
-    @Transactional
-    public void removeManagerRole(Long roomId, Member targetMember, Member requesterMember) {
-        MatchingRoom matchingRoom = findManageMatchingRoom(roomId, requesterMember);
-        matchingRoom.removeManagerRole(requesterMember,targetMember);
-    }
-
-    @Transactional
-    public void deactivateMatchingRoom(Long roomId, Member requesterMember) {
-        MatchingRoom matchingRoom = findManageMatchingRoom(roomId, requesterMember);
-        matchingRoom.deactivateMatchingRoom(requesterMember);
-    }
-
-
-    public void addGroup(MatchingRoom matchingRoom, MatchGroup matchGroup) {
-        matchingRoom.addGroup(matchGroup);
-    }
 
 }

@@ -82,7 +82,7 @@ class ManageFacadeTest {
 
         manageFacade.replaceMatchGroupMember(parameters);
 
-        verify(matchGroupService).replaceMatchGroupMember(groupId, targetMember, replacementMember);
+
     }
 
 

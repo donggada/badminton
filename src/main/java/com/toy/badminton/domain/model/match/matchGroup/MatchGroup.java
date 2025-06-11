@@ -24,6 +24,9 @@ public class MatchGroup extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
+    private boolean isGameOver = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "matching_room_id")
     private MatchingRoom matchingRoom;
@@ -44,6 +47,10 @@ public class MatchGroup extends BaseTimeEntity {
             throw TARGET_NOT_FOUND.build(targetMember.getId());
         }
         members.set(index, replacementMember);
+    }
+
+    public void endGame() {
+        this.isGameOver = true;
     }
 
     private MatchGroup(MatchingRoom matchingRoom, List<Member> members) {

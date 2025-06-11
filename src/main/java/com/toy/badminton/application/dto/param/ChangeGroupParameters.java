@@ -9,7 +9,9 @@ public record ChangeGroupParameters(
         Long roomId,
         Long groupId,
         Member member,
-        ChangeGroupRequest request
+        ChangeGroupRequest request,
+        Member targetMember,
+        Member replacementMember
 ) {
 
     public Long replacementMemberId() {

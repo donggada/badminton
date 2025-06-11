@@ -111,6 +111,7 @@ public class MatchingRoom extends BaseTimeEntity {
         validateAddGroupMemberCount(matchGroup);
         validateAddGroupMemberAllInRoom(matchGroup);
         matchGroups.add(matchGroup);
+        matchGroup.getMembers().forEach(member -> changeMatchingStatus(member, MatchingStatus.MATCHED));
     }
 
     private void validateAddGroupMemberAllInRoom(MatchGroup matchGroup) {
@@ -122,7 +123,9 @@ public class MatchingRoom extends BaseTimeEntity {
 
         if (addCount != DOUBLES) {
             throw NOT_ENOUGH_MATCHING_MEMBERS.build(DOUBLES, addCount);
+//            return false;
         }
+//        return true;
     }
 
     public void addMangerRole(Member targetMember) {
@@ -167,9 +170,8 @@ public class MatchingRoom extends BaseTimeEntity {
                 .findFirst();
     }
 
-    public void updateRoomInfo(String roomName, Set<Member> memberSet) {
+    public void updateRoomName(String roomName) {
         name = roomName;
-        managerList.addAll(memberSet);
     }
 
     public static MatchingRoom createMatchingRoom(String name, Member member) {
@@ -197,5 +199,29 @@ public class MatchingRoom extends BaseTimeEntity {
         if (!isActive) {
             throw INACTIVE_MATCHING_ROOM.build(this.id);
         }
+    }
+
+    public List<Member> findMembersByGroupId(Long groupId) {
+        return matchGroups.stream()
+                .filter(matchGroup -> Objects.equals(matchGroup.getId(), groupId))
+                .findFirst()
+                .map(MatchGroup::getMembers)
+                .orElseThrow(() -> INVALID_MATCHING_GROUP.build(groupId));
+    }
+
+    public void endGroupByGroupId(Long groupId) {
+        matchGroups.stream()
+                .filter(matchGroup -> Objects.equals(matchGroup.getId(), groupId))
+                .findFirst()
+                .orElseThrow(() -> INVALID_MATCHING_GROUP.build(groupId))
+                .endGame();
+    }
+
+    public void replaceMatchGroupMember (Long groupId, Member targetMember, Member replacementMember) {
+        matchGroups.stream()
+                .filter(matchGroup -> Objects.equals(matchGroup.getId(), groupId))
+                .findFirst()
+                .orElseThrow(() -> INVALID_MATCHING_GROUP.build(groupId))
+                .replaceMember(targetMember, replacementMember);
     }
 }
