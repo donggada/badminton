@@ -25,6 +25,7 @@ public enum ErrorCode {
     MATCHING_ROOM_EDIT_FORBIDDEN(HttpStatus.CONFLICT, "매칭 수정권한이 없습니다.", "member_id: %d"),
     REQUESTER_NOT_FOUND(HttpStatus.CONFLICT, "요청자가 매칭방에 존재하지 않습니다.", "member_id: %d"),
     TARGET_NOT_FOUND(HttpStatus.CONFLICT, "교체 대상 멤버를 찾을 수 없습니다.", "member_id: %d"),
+    MEMBER_ALREADY_IN_GROUP(HttpStatus.CONFLICT, "교체 대상 이미 그룹에 있습니다.", "matching_group: %d, member_id: %d"),
     NOT_ENOUGH_MATCHING_MEMBERS(HttpStatus.CONFLICT, "매칭 가능한 멤버 수가 부족합니다.", "min_size: %d, current_size: %d"),
     WITHDRAWN_MEMBER(HttpStatus.CONFLICT, "탈퇴한 회원입니다.", "member_id: %d"),
     DAILY_ROOM_CREATION_LIMIT(HttpStatus.CONFLICT, "활성화된 매칭룸은 하루에 한 개만 생성 가능합니다", ""),

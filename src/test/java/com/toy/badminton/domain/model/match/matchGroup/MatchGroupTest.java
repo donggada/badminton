@@ -1,6 +1,7 @@
 package com.toy.badminton.domain.model.match.matchGroup;
 
-import com.toy.badminton.domain.model.member.Member;
+import com.toy.badminton.domain.match.MatchGroup;
+import com.toy.badminton.domain.member.Member;
 import com.toy.badminton.infrastructure.exception.ApplicationException;
 import com.toy.badminton.infrastructure.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;

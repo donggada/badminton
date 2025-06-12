@@ -1,286 +1,589 @@
 package com.toy.badminton.domain.model.matchingRoom;
 
-import com.toy.badminton.application.dto.request.manager.ChangeGroupRequest;
-import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
-import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
-import com.toy.badminton.domain.model.member.Level;
-import com.toy.badminton.domain.model.member.Member;
+import com.toy.badminton.domain.match.MatchGroup;
+import com.toy.badminton.domain.match.MatchingInfo;
+import com.toy.badminton.domain.match.MatchingRoom;
+import com.toy.badminton.domain.member.Member;
 import com.toy.badminton.infrastructure.exception.ApplicationException;
-import com.toy.badminton.infrastructure.exception.ErrorCode;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.*;
 
+import static com.toy.badminton.domain.match.MatchingStatus.*;
 import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchingRoomTest {
 
     @Test
-    @DisplayName("5명 중 5명 활성상태")
-    void getActiveMembers1() {
-        Member member1 = Member.builder().level(Level.MASTER).build();
-        Member member2 = Member.builder().level(Level.GROUP_A).build();
-        Member member3 = Member.builder().level(Level.GROUP_B).build();
-        Member member4 = Member.builder().level(Level.GROUP_C).build();
-        Member member5 = Member.builder().level(Level.GROUP_C).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom testRoom = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4, matchingInfo5))
-                .build();
-
-        List<Member> result = testRoom.getActiveMembers();
-
-        Assertions.assertThat(result).hasSize(5);
-
-        Assertions.assertThat(
-                result
-        ).containsExactlyInAnyOrderElementsOf(
-                List.of(member1, member2, member3, member4, member5)
-        );
-    }
-
-    @Test
-    @DisplayName("5명 중 3명 활성상태")
-    void getActiveMembers2() {
-        Member member1 = Member.builder().level(Level.MASTER).build();
-        Member member2 = Member.builder().level(Level.GROUP_A).build();
-        Member member3 = Member.builder().level(Level.GROUP_B).build();
-        Member member4 = Member.builder().level(Level.GROUP_C).build();
-        Member member5 = Member.builder().level(Level.GROUP_C).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom testRoom = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4, matchingInfo5))
-                .build();
-
-        List<Member> result = testRoom.getActiveMembers();
-
-        Assertions.assertThat(result).hasSize(3);
-
-        Assertions.assertThat(
-                result
-        ).containsExactlyInAnyOrderElementsOf(
-                List.of(member1, member2, member5)
-        );
-    }
-
-    @Test
-    @DisplayName("단식 매칭 검증 2명 이상")
-    void validateMinActiveMembers1() {
-        Member member1 = Member.builder().level(Level.MASTER).build();
-        Member member2 = Member.builder().level(Level.GROUP_A).build();
-        Member member3 = Member.builder().level(Level.GROUP_B).build();
-        Member member4 = Member.builder().level(Level.GROUP_C).build();
-        Member member5 = Member.builder().level(Level.GROUP_C).build();
-
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom testRoom = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4, matchingInfo5))
-                .build();
-
-        assertDoesNotThrow(() -> testRoom.validateMinActiveMembers(2));
-    }
-
-    @Test
-    @DisplayName("단식 매칭 검증 2명 미만")
-    void validateMinActiveMembers2() {
-        Member member1 = Member.builder().level(Level.MASTER).build();
-        Member member2 = Member.builder().level(Level.GROUP_A).build();
-        Member member3 = Member.builder().level(Level.GROUP_B).build();
-        Member member4 = Member.builder().level(Level.GROUP_C).build();
-        Member member5 = Member.builder().level(Level.GROUP_C).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(MatchingStatus.MATCHING_INACTIVE).build();
-
-        MatchingRoom testRoom = MatchingRoom.builder()
-                .id(1L)
-                .name("testRoom")
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4, matchingInfo5))
-                .build();
-
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> testRoom.validateMinActiveMembers(2));
-        assertEquals(exception.getMessage(), NOT_ENOUGH_MATCHING_MEMBERS.getMessage());
-        assertEquals(exception.getReason(), NOT_ENOUGH_MATCHING_MEMBERS.getReason().formatted(2, 1));
-    }
-
-    @Test
-    @DisplayName("복식 매칭 검증 4명 이상")
-    void validateMinActiveMembers3() {
-        Member member1 = Member.builder().level(Level.MASTER).build();
-        Member member2 = Member.builder().level(Level.GROUP_A).build();
-        Member member3 = Member.builder().level(Level.GROUP_B).build();
-        Member member4 = Member.builder().level(Level.GROUP_C).build();
-        Member member5 = Member.builder().level(Level.GROUP_C).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom testRoom = MatchingRoom.builder()
-                .id(1L)
-                .name("testRoom")
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4, matchingInfo5))
-                .build();
-
-        assertDoesNotThrow(() -> testRoom.validateMinActiveMembers(4));
-
-    }
-
-    @Test
-    @DisplayName("복식 매칭 검증 4명 미만")
-    void validateMinActiveMembers4() {
-        Member member1 = Member.builder().level(Level.MASTER).build();
-        Member member2 = Member.builder().level(Level.GROUP_A).build();
-        Member member3 = Member.builder().level(Level.GROUP_B).build();
-        Member member4 = Member.builder().level(Level.GROUP_C).build();
-        Member member5 = Member.builder().level(Level.GROUP_C).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(MatchingStatus.MATCHING_INACTIVE).build();
-        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(MatchingStatus.MATCHING_INACTIVE).build();
-
-        MatchingRoom testRoom = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4, matchingInfo5))
-                .build();
-
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> testRoom.validateMinActiveMembers(4));
-        assertEquals(exception.getMessage(), NOT_ENOUGH_MATCHING_MEMBERS.getMessage());
-        assertEquals(exception.getReason(), NOT_ENOUGH_MATCHING_MEMBERS.getReason().formatted(4, 2));
-    }
-
-    @Test
-    @DisplayName("변경 요청이 정상인 경우 예외 없이 통과한다")
-    void validateChangeRequestMembersExist () {
-        ChangeGroupRequest request = new ChangeGroupRequest(1L, 2L);
-        Member member1 = Member.builder().id(1L).build();
-        Member member2 = Member.builder().id(2L).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom room = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
-                .build();
-
-        assertDoesNotThrow(() -> room.validateChangeRequestMembersExist(request));
-    }
-
-    @Test
-    @DisplayName("요청자가 존재하지 않으면 예외가 발생한다")
-    void validateChangeRequestMembersExist_withRequesterNotFound () {
-        Long groupId = 1L;
-        Long replacementMemberId = 3L;
-        Long targetMemberId = 2L;
-        ChangeGroupRequest request = new ChangeGroupRequest(replacementMemberId, targetMemberId);
-        Member member1 = Member.builder().id(1L).build();
-        Member member2 = Member.builder().id(2L).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom room = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
-                .build();
-
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> room.validateChangeRequestMembersExist(request));
-
-        assertEquals(REQUESTER_NOT_FOUND.getMessage(), exception.getMessage());
-        assertEquals(REQUESTER_NOT_FOUND.getReason().formatted(replacementMemberId), exception.getReason());
-    }
-
-    @Test
-    @DisplayName("교체 대상자가 존재하지 않으면 예외가 발생한다")
-    void validateChangeRequestMembersExist_withTargetNotFound () {
-        Long groupId = 1L;
-        Long replacementMemberId = 1L;
-        Long targetMemberId = 4L;
-        ChangeGroupRequest request = new ChangeGroupRequest(replacementMemberId, targetMemberId);
-        Member member1 = Member.builder().id(1L).build();
-        Member member2 = Member.builder().id(2L).build();
-
-        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(MatchingStatus.WAITING).build();
-        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(MatchingStatus.WAITING).build();
-
-        MatchingRoom room = MatchingRoom.builder()
-                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
-                .build();
-
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> room.validateChangeRequestMembersExist(request));
-        assertEquals(TARGET_NOT_FOUND.getMessage(), exception.getMessage());
-        assertEquals(TARGET_NOT_FOUND.getReason().formatted(targetMemberId), exception.getReason());
-    }
-
-    @Test
-    @DisplayName("주어진 그룹 ID로 멤버를 찾을 수 있는 경우") // 테스트 케이스 이름
-    void findMembersByGroupId_GroupExists_ReturnsMembers() {
-        Long groupId = 1L;
+    @DisplayName("getActiveMembers: 대기 중인 멤버 목록을 올바르게 반환한다")
+    void getActiveMembers_returnsWaitingMembers() {
         Member member1 = Member.builder().id(1L).build();
         Member member2 = Member.builder().id(2L).build();
         Member member3 = Member.builder().id(3L).build();
         Member member4 = Member.builder().id(4L).build();
 
+        List<MatchingInfo> matchingInfos = List.of(
+                MatchingInfo.builder().member(member1).status(WAITING).build(),
+                MatchingInfo.builder().member(member2).status(MATCHED).build(),
+                MatchingInfo.builder().member(member3).status(WAITING).build(),
+                MatchingInfo.builder().member(member4).status(WAITING).build()
+        );
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
+
+        List<Member> activeMembers = matchingRoom.getActiveMembers();
+
+        assertEquals(3, activeMembers.size());
+        assertTrue(activeMembers.contains(member1));
+        assertFalse(activeMembers.contains(member2));
+        assertTrue(activeMembers.contains(member3));
+        assertTrue(activeMembers.contains(member4));
+    }
+
+    @Test
+    @DisplayName("validateMinActiveMembers: 최소 인원 충족 시 예외가 발생하지 않는다")
+    void validateMinActiveMembers_sufficientMembers_noException() {
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+        Member member3 = Member.builder().id(3L).build();
+        Member member4 = Member.builder().id(4L).build();
+
+        List<MatchingInfo> matchingInfos = List.of(
+                MatchingInfo.builder().member(member1).status(WAITING).build(),
+                MatchingInfo.builder().member(member2).status(WAITING).build(),
+                MatchingInfo.builder().member(member3).status(WAITING).build(),
+                MatchingInfo.builder().member(member4).status(WAITING).build()
+        );
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
+
+        int minSize = 4;
+
+        assertDoesNotThrow(() -> matchingRoom.validateMinActiveMembers(minSize));
+    }
+
+
+    @Test
+    @DisplayName("validateMinActiveMembers: 최소 인원 미달 시 예외가 발생한다")
+    void validateMinActiveMembers_insufficientMembers_throwsException() {
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+        Member member3 = Member.builder().id(3L).build();
+
+        List<MatchingInfo> matchingInfos = List.of(
+                MatchingInfo.builder().member(member1).status(WAITING).build(),
+                MatchingInfo.builder().member(member2).status(WAITING).build(),
+                MatchingInfo.builder().member(member3).status(WAITING).build()
+        );
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
+
+        int minSize = 4;
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.validateMinActiveMembers(minSize));
+
+
+        assertEquals(NOT_ENOUGH_MATCHING_MEMBERS.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("validateManager: 매니저인 경우 예외가 발생하지 않는다")
+    void validateManager_isManager_noException() {
+        Member member = Member.builder().id(1L).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().managerList(Set.of(member)).build();
+
+        assertDoesNotThrow(() -> matchingRoom.validateManager(member));
+    }
+
+    @Test
+    @DisplayName("validateManager: 매니저가 아닌 경우 예외가 발생한다")
+    void validateManager_isNotManager_throwsException() {
+        Member member = Member.builder().id(1L).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.validateManager(member));
+
+        assertEquals(MATCHING_ROOM_EDIT_FORBIDDEN.getMessage(), exception.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("addMember: 새로운 멤버를 방에 추가한다")
+    void addMember_addNewMember_addsToListAndSetsRoom() {
+        Member member = Member.builder().id(1L).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(member).build();
+
+        matchingRoom.addMember(member, matchingInfo);
+
+        assertEquals(1, matchingRoom.getMatchingInfos().size());
+        assertTrue(matchingRoom.getMatchingInfos().contains(matchingInfo));
+    }
+
+    @Test
+    @DisplayName("addMember: 이미 있는 멤버를 다시 추가하면 상태만 WAITING으로 변경한다")
+    void addMember_addExistingMember_changesStatusToWaiting() {
+        Member member = Member.builder().id(1L).build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(member).build();
+        MatchingInfo newMatchingInfo = MatchingInfo.builder().member(member).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(List.of(matchingInfo)).build();
+
+        matchingRoom.addMember(member, newMatchingInfo);
+
+        assertEquals(1, matchingRoom.getMatchingInfos().size());
+        assertTrue(matchingRoom.getMatchingInfos().contains(matchingInfo));
+        assertFalse(matchingRoom.getMatchingInfos().contains(newMatchingInfo));
+        assertEquals(matchingInfo.getStatus(), WAITING);
+    }
+
+
+
+    @Test
+    @DisplayName("addGroup: 그룹 멤버 수가 DOUBLES가 아닌 경우 예외가 발생한다")
+    void addGroup_invalidMemberCount_throwsException() {
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+        Member member3 = Member.builder().id(3L).build();
+        Member member4 = Member.builder().id(4L).build();
+        List<Member> groupMembers = List.of(member1, member2, member3);
+        MatchGroup matchGroup = MatchGroup.builder().members(groupMembers).build();
+
+        List<MatchingInfo> matchingInfos = List.of(
+                MatchingInfo.builder().member(member1).status(WAITING).build(),
+                MatchingInfo.builder().member(member2).status(WAITING).build(),
+                MatchingInfo.builder().member(member3).status(WAITING).build(),
+                MatchingInfo.builder().member(member4).status(WAITING).build()
+        );
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
+
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.addGroup(matchGroup));
+
+
+        assertEquals(NOT_ENOUGH_MATCHING_MEMBERS.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("addGroup: 그룹 멤버가 방에 없는 경우 예외가 발생한다")
+    void addGroup_invalidGroupMemberAllInRoom_throwsException() {
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+        Member member3 = Member.builder().id(3L).build();
+        Member member4 = Member.builder().id(4L).build();
         Member member5 = Member.builder().id(5L).build();
-        Member member6 = Member.builder().id(6L).build();
-        Member member7 = Member.builder().id(7L).build();
-        Member member8 = Member.builder().id(8L).build();
+        List<Member> groupMembers = List.of(member1, member2, member3, member5);
+        MatchGroup matchGroup = MatchGroup.builder().members(groupMembers).build();
 
-        MatchGroup group1 = MatchGroup.builder().id(1L).members(List.of(member1, member2, member3, member4)).build();
-        MatchGroup group2 = MatchGroup.builder().id(2L).members(List.of(member5, member6, member7, member8)).build();
-        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(group1, group2)).build();
+        List<MatchingInfo> matchingInfos = List.of(
+                MatchingInfo.builder().member(member1).status(WAITING).build(),
+                MatchingInfo.builder().member(member2).status(WAITING).build(),
+                MatchingInfo.builder().member(member3).status(WAITING).build(),
+                MatchingInfo.builder().member(member4).status(WAITING).build()
+        );
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
 
 
-        List<Member> findMembers = matchingRoom.findMembersByGroupId(groupId);
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.addGroup(matchGroup));
 
-        assertEquals(findMembers.size(), 4);
-        assertEquals(findMembers, List.of(member1, member2, member3, member4));
+
+        assertEquals(MEMBER_NOT_IN_ROOM.getMessage(), exception.getMessage());
     }
 
     @Test
-    @DisplayName("MatchingRoom 에 그룹이 하나도 없는 경우")
-    void findMembersByGroupId_NoGroupsInRoom_Exception() {
-        Long groupId = 1L;
+    @DisplayName("addGroup: 그룹 멤버 수가 DOUBLES 이고  그룹 멤버가 방에 있는 경우 예외하지 않고 상태값이 MATCHED 변경 한다")
+    void addGroup_invalidGroupMemberAllInRoom_noException() {
         Member member1 = Member.builder().id(1L).build();
         Member member2 = Member.builder().id(2L).build();
         Member member3 = Member.builder().id(3L).build();
         Member member4 = Member.builder().id(4L).build();
+        Member member5 = Member.builder().id(5L).build();
+        List<Member> groupMembers = List.of(member1, member2, member3, member4);
+        MatchGroup matchGroup = MatchGroup.builder().members(groupMembers).build();
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(member1).status(WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member2).status(WAITING).build();
+        MatchingInfo matchingInfo3 = MatchingInfo.builder().member(member3).status(WAITING).build();
+        MatchingInfo matchingInfo4 = MatchingInfo.builder().member(member4).status(WAITING).build();
+        MatchingInfo matchingInfo5 = MatchingInfo.builder().member(member5).status(WAITING).build();
+        List<MatchingInfo> matchingInfos = List.of(matchingInfo1, matchingInfo2, matchingInfo3, matchingInfo4);
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(matchingInfos).build();
 
-        MatchGroup group = MatchGroup.builder().id(2L).members(List.of(member1, member2, member3, member4)).build();
-        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(group)).build();
+        matchingRoom.addGroup(matchGroup);
 
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> matchingRoom.findMembersByGroupId(groupId));
+        assertEquals(matchingInfo1.getStatus(), MATCHED);
+        assertEquals(matchingInfo2.getStatus(), MATCHED);
+        assertEquals(matchingInfo3.getStatus(), MATCHED);
+        assertEquals(matchingInfo4.getStatus(), MATCHED);
+        assertEquals(matchingInfo5.getStatus(), WAITING);
+    }
+
+    @Test
+    @DisplayName("addMangerRole: 방에 있는 멤버에게 매니저 권한 부여 성공")
+    void addManagerRole_Success() {
+        Member member1 = Member.builder().id(1L).build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(member1).status(WAITING).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(List.of(matchingInfo)).build();
+        matchingRoom.addMangerRole(member1);
+
+        Set<Member> managerList = matchingRoom.getManagerList();
+        assertEquals(managerList.size(), 1);
+        assertTrue(managerList.contains(member1));
+    }
+
+    @Test
+    @DisplayName("addMangerRole: 방에 없는 멤버에게 매니저 권한 부여 시 예외 발생")
+    void addManagerRole_MemberNotInRoom_ThrowsException() {
+        Member inMember = Member.builder().id(1L).build();
+        Member notInMember = Member.builder().id(2L).build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(inMember).status(WAITING).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(List.of(matchingInfo)).build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.addMangerRole(notInMember));
+
+
+        assertEquals(MEMBER_NOT_IN_ROOM.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("addMangerRole: 이미 매니저인 멤버에게 매니저 권한 부여 시 중복 추가되지 않음")
+    void addManagerRole_AlreadyManager_NoDuplicate() {
+        Member member = Member.builder().id(1L).build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(member).status(WAITING).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingInfos(List.of(matchingInfo)).build();
+
+        matchingRoom.addMangerRole(member);
+
+        Set<Member> managerList = matchingRoom.getManagerList();
+        assertEquals(managerList.size(), 1);
+        assertTrue(managerList.contains(member));
+    }
+
+    @Test
+    @DisplayName("removeManagerRole: 방장이 방에 있는 매니저 권한 삭제 성공")
+    void removeManagerRole_Success() {
+        Member requestMember = Member.builder().id(1L).build();
+        Member removeMember = Member.builder().id(2L).build();
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(requestMember).status(WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(removeMember).status(WAITING).build();
+        HashSet<Member> mockManagerList = new HashSet<>(Set.of(requestMember, removeMember));
+
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .managerList(mockManagerList)
+                .build();
+
+        matchingRoom.fixture(1L);
+
+        matchingRoom.removeManagerRole(requestMember, removeMember);
+        Set<Member> managerList = matchingRoom.getManagerList();
+        assertEquals(managerList.size(), 1);
+        assertTrue(managerList.contains(requestMember));
+        assertFalse(managerList.contains(removeMember));
+    }
+
+    @Test
+    @DisplayName("removeManagerRole: 방장이 아닌 멤버가 매니저 권한 삭제 시도 시 예외 발생")
+    void removeManagerRole_RequesterNotOwner_ThrowsException() {
+        Member requestMember = Member.builder().id(1L).build();
+        Member removeMember = Member.builder().id(2L).build();
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(requestMember).status(WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(removeMember).status(WAITING).build();
+        HashSet<Member> mockManagerList = new HashSet<>(Set.of(requestMember, removeMember));
+
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .managerList(mockManagerList)
+                .build();
+
+        matchingRoom.fixture(2L);
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.removeManagerRole(requestMember, removeMember)
+        );
+
+        assertEquals(MANAGER_PERMISSION_DENIED.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("removeManagerRole: 방장이 방에 없는 멤버의 매니저 권한 삭제 시도 시 예외 발생")
+    void removeManagerRole_TargetMemberNotInRoom_ThrowsException() {
+        Member requestMember = Member.builder().id(1L).build();
+        Member removeMember = Member.builder().id(2L).build();
+        Member member = Member.builder().id(3L).build();
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(requestMember).status(WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(member).status(WAITING).build();
+        HashSet<Member> mockManagerList = new HashSet<>(Set.of(requestMember, member));
+
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .managerList(mockManagerList)
+                .build();
+
+        matchingRoom.fixture(1L);
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.removeManagerRole(requestMember, removeMember)
+        );
+
+        assertEquals(MEMBER_NOT_IN_ROOM.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("removeManagerRole: 방장이 매니저가 아닌 멤버의 권한 삭제 시도 시 목록 변경 없음")
+    void removeManagerRole_TargetMemberNotInManagerList_NoChange() {
+        Member requestMember = Member.builder().id(1L).build();
+        Member removeMember = Member.builder().id(2L).build();
+        MatchingInfo matchingInfo1 = MatchingInfo.builder().member(requestMember).status(WAITING).build();
+        MatchingInfo matchingInfo2 = MatchingInfo.builder().member(removeMember).status(WAITING).build();
+        HashSet<Member> mockManagerList = new HashSet<>(Set.of(requestMember));
+
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo1, matchingInfo2))
+                .managerList(mockManagerList)
+                .build();
+
+        matchingRoom.fixture(1L);
+
+        matchingRoom.removeManagerRole(requestMember, removeMember);
+        Set<Member> managerList = matchingRoom.getManagerList();
+        assertEquals(managerList.size(), 1);
+        assertTrue(managerList.contains(requestMember));
+        assertFalse(managerList.contains(removeMember));
+    }
+
+    @Test
+    @DisplayName("deactivateMatchingRoom: 방장이 방을 비활성화한다")
+    void deactivateMatchingRoom_ownerDeactivates_setsIsActiveToFalse() {
+        Member requestMember = Member.builder().id(1L).build();
+
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .isActive(true)
+                .build();
+
+        matchingRoom.fixture(1L);
+        matchingRoom.deactivateMatchingRoom(requestMember);
+        assertFalse(matchingRoom.isActive());
+    }
+
+    @Test
+    @DisplayName("deactivateMatchingRoom: 방장이 아닌 멤버가 방 비활성화 시도 시 예외가 발생한다")
+    void deactivateMatchingRoom_notOwnerAttemptsDeactivation_throwsException() {
+        Member requestMember = Member.builder().id(1L).build();
+
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .isActive(true)
+                .build();
+
+        matchingRoom.fixture(2L);
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.deactivateMatchingRoom(requestMember));
+
+        assertEquals(MANAGER_PERMISSION_DENIED.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("changeMatchingStatus: MatchingInfo가 있는 멤버의 상태 변경 성공")
+    void changeMatchingStatus_MemberWithInfo_Success() {
+        Member member = Member.builder().id(1L).build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(member).status(WAITING).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo))
+                .build();
+
+        matchingRoom.changeMatchingStatus(member, MATCHING_INACTIVE);
+
+        assertEquals(matchingInfo.getStatus(), MATCHING_INACTIVE);
+    }
+
+    @Test
+    @DisplayName("changeMatchingStatus: MatchingInfo가 없는 멤버의 상태 변경 시도 시 예외 발생")
+    void changeMatchingStatus_MemberWithoutInfo_ThrowsException() {
+        Member targetMember = Member.builder().id(1L).build();
+        Member member = Member.builder().id(2L).build();
+        MatchingInfo matchingInfo = MatchingInfo.builder().member(member).status(WAITING).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder()
+                .matchingInfos(List.of(matchingInfo))
+                .build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.changeMatchingStatus(targetMember, MATCHING_INACTIVE)
+        );
+
+        assertEquals(INVALID_MATCHING_ROOM_INFO.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("findMembersByGroupId: 존재하는 groupId로 멤버 목록 조회 성공")
+    void findMembersByGroupId_ExistingGroup_ReturnsMembers() {
+        Long groupId = 1L;
+        Member memberA = Member.builder().id(1L).build();
+        Member memberB = Member.builder().id(2L).build();
+        Member memberC = Member.builder().id(3L).build();
+        Member memberD = Member.builder().id(4L).build();
+        List<Member> members = List.of(memberA, memberB, memberC, memberD);
+        MatchGroup matchGroup = MatchGroup.builder()
+                .id(groupId)
+                .members(members)
+                .build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+        List<Member> result = matchingRoom.findMembersByGroupId(groupId);
+
+        assertEquals(result.size(), 4);
+        assertEquals(result, members);
+    }
+
+    @Test
+    @DisplayName("findMembersByGroupId: 존재하지 않는 groupId로 멤버 목록 조회 시 예외 발생")
+    void findMembersByGroupId_NonExistingGroup_ThrowsException() {
+        Long groupId = 1L;
+        Member memberA = Member.builder().id(1L).build();
+        Member memberB = Member.builder().id(2L).build();
+        Member memberC = Member.builder().id(3L).build();
+        Member memberD = Member.builder().id(4L).build();
+        List<Member> members = List.of(memberA, memberB, memberC, memberD);
+        MatchGroup matchGroup = MatchGroup.builder()
+                .id(groupId)
+                .members(members)
+                .build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.findMembersByGroupId(2L)
+        );
+
         assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
-        assertEquals(INVALID_MATCHING_GROUP.getReason().formatted(groupId), exception.getReason());
+    }
 
+    @Test
+    @DisplayName("findMembersByGroupId: MatchGroup에 멤버가 없는 경우 빈 목록 반환")
+    void findMembersByGroupId_GroupWithNoMembers_ReturnsEmptyList() {
+        Long groupId = 1L;
+
+        MatchGroup matchGroup = MatchGroup.builder()
+                .id(groupId)
+                .build();
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+        List<Member> result = matchingRoom.findMembersByGroupId(groupId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("endGroupByGroupId: 존재하는 groupId로 그룹 종료 성공")
+    void endGroupByGroupId_ExistingGroup_EndsGroup() {
+        Long groupId = 1L;
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+        matchingRoom.endGroupByGroupId(groupId);
+
+        assertTrue(matchGroup.isGameOver());
+    }
+
+    @Test
+    @DisplayName("endGroupByGroupId: 존재하지 않는 groupId로 그룹 종료 시도 시 예외 발생")
+    void endGroupByGroupId_NonExistingGroup_ThrowsException() {
+        Long groupId = 1L;
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.endGroupByGroupId(2L)
+        );
+
+        assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("replaceMatchGroupMember: 존재하는 그룹에서 멤버 교체 성공")
+    void replaceMatchGroupMember_ExistingGroupAndMember_Success() {
+        Long groupId = 1L;
+        Member targetMember = Member.builder().id(1L).build();
+        Member replacementMember = Member.builder().id(2L).build();
+        Member memberA = Member.builder().id(3L).build();
+        Member memberB = Member.builder().id(4L).build();
+        Member memberC = Member.builder().id(5L).build();
+        List<Member> members = new ArrayList<>(List.of(memberA, memberB, targetMember, memberC));
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+        matchingRoom.replaceMatchGroupMember(groupId, targetMember, replacementMember);
+
+        assertEquals(members, List.of(memberA, memberB, replacementMember, memberC));
+    }
+
+    @Test
+    @DisplayName("replaceMatchGroupMember: 존재하지 않는 groupId로 멤버 교체 시도 시 예외 발생")
+    void replaceMatchGroupMember_NonExistingGroup_ThrowsException() {
+        Long groupId = 1L;
+        Member targetMember = Member.builder().id(1L).build();
+        Member replacementMember = Member.builder().id(2L).build();
+        Member memberA = Member.builder().id(3L).build();
+        Member memberB = Member.builder().id(4L).build();
+        Member memberC = Member.builder().id(5L).build();
+        List<Member> members = new ArrayList<>(List.of(memberA, memberB, targetMember, memberC));
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.replaceMatchGroupMember(2L, targetMember, replacementMember)
+        );
+
+        assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("replaceMatchGroupMember: 존재하는 그룹이지만 교체 대상 멤버가 없는 경우 예외 발생")
+    void replaceMatchGroupMember_ExistingGroupButTargetMemberNotFound_ThrowsException() {
+        Long groupId = 1L;
+        Member targetMember = Member.builder().id(1L).build();
+        Member replacementMember = Member.builder().id(2L).build();
+        Member memberA = Member.builder().id(3L).build();
+        Member memberB = Member.builder().id(4L).build();
+        Member memberC = Member.builder().id(5L).build();
+        Member memberD = Member.builder().id(6L).build();
+        List<Member> members = new ArrayList<>(List.of(memberA, memberB, memberC, memberD));
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.replaceMatchGroupMember(groupId, targetMember, replacementMember)
+        );
+
+        assertEquals(TARGET_NOT_FOUND.getMessage(), exception.getMessage());
+        assertEquals(members, List.of(memberA, memberB, memberC, memberD));
+    }
+
+    @Test
+    @DisplayName("replaceMatchGroupMember: 존재하는 그룹에서 교체할 멤버가 이미 그룹에 있는 경우 예외 발생")
+    void replaceMatchGroupMember_ExistingGroupAndMember_ReplacementAlreadyInGroup_ThrowsException() {
+        Long groupId = 1L;
+        Member targetMember = Member.builder().id(1L).build();
+        Member replacementMember = Member.builder().id(2L).build();
+        Member memberA = Member.builder().id(3L).build();
+        Member memberB = Member.builder().id(4L).build();
+        List<Member> members = new ArrayList<>(List.of(memberA, memberB, targetMember, replacementMember));
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.replaceMatchGroupMember(groupId, targetMember, replacementMember)
+        );
+
+        assertEquals(MEMBER_ALREADY_IN_GROUP.getMessage(), exception.getMessage());
+        assertEquals(members, List.of(memberA, memberB, targetMember, replacementMember));
     }
 
 

@@ -3,7 +3,7 @@ package com.toy.badminton.infrastructure.security;
 
 
 
-import com.toy.badminton.domain.model.member.Member;
+import com.toy.badminton.domain.member.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

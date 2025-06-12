@@ -1,11 +1,12 @@
 package com.toy.badminton.domain.factory.matching;
 
-import com.toy.badminton.domain.model.match.matchGroup.MatchGroup;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingInfo;
-import com.toy.badminton.domain.model.match.matchingInfo.MatchingStatus;
-import com.toy.badminton.domain.model.match.matchingRoom.MatchingRoom;
-import com.toy.badminton.domain.model.member.Level;
-import com.toy.badminton.domain.model.member.Member;
+import com.toy.badminton.domain.match.MatchGroup;
+import com.toy.badminton.domain.match.MatchingInfo;
+import com.toy.badminton.domain.match.MatchingStatus;
+import com.toy.badminton.domain.match.MatchingRoom;
+import com.toy.badminton.domain.match.RandomMatchingService;
+import com.toy.badminton.domain.member.Level;
+import com.toy.badminton.domain.member.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

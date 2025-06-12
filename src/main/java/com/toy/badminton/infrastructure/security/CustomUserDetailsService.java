@@ -2,8 +2,8 @@ package com.toy.badminton.infrastructure.security;
 
 
 
-import com.toy.badminton.domain.model.member.Member;
-import com.toy.badminton.domain.model.member.MemberRepository;
+import com.toy.badminton.domain.member.Member;
+import com.toy.badminton.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
