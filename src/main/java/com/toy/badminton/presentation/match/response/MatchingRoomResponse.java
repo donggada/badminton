@@ -1,6 +1,6 @@
 package com.toy.badminton.presentation.match.response;
 
-import com.toy.badminton.domain.match.MatchingInfo;
+import com.toy.badminton.domain.match.MatchingRoomMember;
 import com.toy.badminton.domain.match.MatchingRoom;
 
 public record MatchingRoomResponse(
@@ -13,7 +13,7 @@ public record MatchingRoomResponse(
         return new MatchingRoomResponse(
                 matchingRoom.getId(), 
                 matchingRoom.getName(),
-                matchingRoom.getMatchingInfos().stream().filter(MatchingInfo::isInRoom).count()
+                matchingRoom.getMatchingRoomMembers().stream().filter(MatchingRoomMember::isInRoom).count()
         );
     }
 }

@@ -1,6 +1,6 @@
 package com.toy.badminton.application.match;
 
-import com.toy.badminton.domain.match.MatchingInfo;
+import com.toy.badminton.domain.match.MatchingRoomMember;
 import com.toy.badminton.presentation.match.request.ChangeMatchingStatusRequest;
 import com.toy.badminton.presentation.match.request.CreateMatchingRoomRequest;
 import com.toy.badminton.presentation.match.response.CreateMatchingRoomResponse;
@@ -37,14 +37,14 @@ public class MatchingFacade {
     @Transactional
     public MatchingRoomDetailResponse enterMatchingRoom(Long roomId, Member requestMember) {
         MatchingRoom matchingRoom = matchService.findAndValidateActiveRoom(roomId);
-        matchingRoom.addMember(requestMember, MatchingInfo.createMatchingInfo(matchingRoom, requestMember));
+        matchingRoom.addMember(requestMember, MatchingRoomMember.createMatchingInfo(matchingRoom, requestMember));
         return MatchingRoomDetailResponse.of(matchingRoom, requestMember);
     }
 
     @Transactional
     public MatchingRoomDetailResponse enterCodeMatchingRoom(String entryCode, Member requestMember) {
         MatchingRoom matchingRoom = matchService.findActiveRoomByEntryCode(entryCode);
-        matchingRoom.addMember(requestMember, MatchingInfo.createMatchingInfo(matchingRoom, requestMember));
+        matchingRoom.addMember(requestMember, MatchingRoomMember.createMatchingInfo(matchingRoom, requestMember));
         return MatchingRoomDetailResponse.of(matchingRoom, requestMember);
     }
 

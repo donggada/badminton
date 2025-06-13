@@ -10,10 +10,10 @@ public interface MatchingService {
     List<MatchGroup> startMatching(MatchingRoom matchingRoom);
 //    int SINGLES = 2;
     int DOUBLES = 4;
-    default List<Member> sort (List<Member> memberList) {
+    default List<MatchingRoomMember> sort (List<MatchingRoomMember> memberList) {
         //4명일 경우 사용가능
-        List<Member> sortList = new ArrayList<>();
-        memberList.sort(Comparator.comparingInt(Member::getLevelValue));
+        List<MatchingRoomMember> sortList = new ArrayList<>();
+        memberList.sort(Comparator.comparingInt(MatchingRoomMember::getLevelValue));
 
         for (int i = 0; i < 2 ; i++) {
             sortList.add(memberList.get(i));

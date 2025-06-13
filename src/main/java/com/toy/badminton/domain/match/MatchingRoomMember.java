@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -15,7 +14,7 @@ import java.util.Objects;
 @EqualsAndHashCode(callSuper = false)
 @ToString
 @Builder
-public class MatchingInfo extends BaseTimeEntity {
+public class MatchingRoomMember extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,8 +56,8 @@ public class MatchingInfo extends BaseTimeEntity {
         return member.getUsername();
     }
 
-    public boolean hasMemberId(Long memberId) {
-        return Objects.equals(member.getId(), memberId);
+    public int getLevelValue() {
+        return member.getLevelValue();
     }
 
     public boolean isMember(Member member) {
@@ -70,11 +69,11 @@ public class MatchingInfo extends BaseTimeEntity {
     }
 
 
-    public static MatchingInfo createMatchingInfo(MatchingRoom matchingRoom, Member member) {
-        return new MatchingInfo(matchingRoom, member);
+    public static MatchingRoomMember createMatchingInfo(MatchingRoom matchingRoom, Member member) {
+        return new MatchingRoomMember(matchingRoom, member);
     }
 
-    private MatchingInfo(MatchingRoom matchingRoom, Member member) {
+    private MatchingRoomMember(MatchingRoom matchingRoom, Member member) {
         this.matchingRoom = matchingRoom;
         this.member = member;
         this.status = MatchingStatus.WAITING;

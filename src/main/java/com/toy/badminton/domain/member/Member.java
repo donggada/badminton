@@ -1,12 +1,13 @@
 package com.toy.badminton.domain.member;
 
+import com.toy.badminton.domain.match.MatchingRoomMember;
 import com.toy.badminton.presentation.member.request.MemberSignupRequest;
 import com.toy.badminton.presentation.member.request.UpdateMemberProfileRequest;
 import com.toy.badminton.domain.BaseTimeEntity;
-import com.toy.badminton.domain.match.MatchingInfo;
 import com.toy.badminton.infrastructure.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false, exclude = "matchingInfos")
 @ToString
 @Builder
+@BatchSize(size = 100)
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +45,7 @@ public class Member extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MatchingInfo> matchingInfos = new ArrayList<>();
+    private List<MatchingRoomMember> matchingRoomMembers = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "deleted")

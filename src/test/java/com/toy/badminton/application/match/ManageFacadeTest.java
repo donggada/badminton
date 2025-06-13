@@ -1,13 +1,11 @@
-package com.toy.badminton.application.facade;
+package com.toy.badminton.application.match;
 
-import com.toy.badminton.application.match.ManageFacade;
 import com.toy.badminton.domain.member.MemberService;
 import com.toy.badminton.presentation.match.vo.ChangeGroupParameters;
 import com.toy.badminton.presentation.match.request.ChangeGroupRequest;
 import com.toy.badminton.domain.member.Member;
 import com.toy.badminton.domain.match.MatchService;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

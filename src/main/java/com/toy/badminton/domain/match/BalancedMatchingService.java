@@ -1,6 +1,5 @@
 package com.toy.badminton.domain.match;
 
-import com.toy.badminton.domain.member.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,12 +13,12 @@ public class BalancedMatchingService implements MatchingService {
         ArrayList<MatchGroup> matchGroupList = new ArrayList<>();
 
         matchingRoom.validateMinActiveMembers(DOUBLES);
-        List<Member> memberList = matchingRoom.getActiveMembers();
+        List<MatchingRoomMember> roomMember = matchingRoom.getActiveRoomMember();
 
-        List<Member> balanceMemberList = balanceGroup(memberList);
+        List<MatchingRoomMember> balanceMemberList = balanceGroup(roomMember);
 
         for (int i = 0; i <= balanceMemberList.size() - 4; i += 4) {
-            List<Member> group = balanceMemberList.subList(i, i + 4);
+            List<MatchingRoomMember> group = balanceMemberList.subList(i, i + 4);
 
             MatchGroup matchGroup = MatchGroup.createMatchGroup(matchingRoom, sort(group));
             matchGroupList.add(matchGroup);
@@ -28,10 +27,11 @@ public class BalancedMatchingService implements MatchingService {
         return matchGroupList;
     }
 
-    private List<Member> balanceGroup(List<Member> group) {
-        List<Member> balancedGroup = new ArrayList<>(group);
 
-        balancedGroup.sort(Comparator.comparingInt(Member::getLevelValue));
+    private List<MatchingRoomMember> balanceGroup(List<MatchingRoomMember> group) {
+        List<MatchingRoomMember> balancedGroup = new ArrayList<>(group);
+
+        balancedGroup.sort(Comparator.comparingInt(MatchingRoomMember::getLevelValue));
 
         return balancedGroup;
     }

@@ -8,6 +8,7 @@ import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.toy.badminton.infrastructure.exception.ErrorCode.MEMBER_ALREADY_IN_GROUP;
 import static com.toy.badminton.infrastructure.exception.ErrorCode.TARGET_NOT_FOUND;
@@ -37,33 +38,46 @@ public class MatchGroup extends BaseTimeEntity {
     @JoinTable(
             name = "match_group_members",
             joinColumns = @JoinColumn(name = "match_group_id"),
-            inverseJoinColumns = @JoinColumn(name = "member_id")
+            inverseJoinColumns = @JoinColumn(name = "matching_room_member_id")
     )
-    private List<Member> members = new ArrayList<>();
+    private List<MatchingRoomMember> matchingRoomMembers = new ArrayList<>();
 
-    public void replaceMember(Member targetMember, Member replacementMember) {
-        int index = members.indexOf(targetMember);
+    public void replaceMember(MatchingRoomMember target, MatchingRoomMember replacement) {
+        int index = matchingRoomMembers.indexOf(target);
         if (index == -1) {
-            throw TARGET_NOT_FOUND.build(targetMember.getId());
+            throw TARGET_NOT_FOUND.build(target.getId());
         }
 
-        if (members.contains(replacementMember)) {
-            throw MEMBER_ALREADY_IN_GROUP.build(id, targetMember.getId());
+        if (matchingRoomMembers.contains(replacement)) {
+            throw MEMBER_ALREADY_IN_GROUP.build(id, replacement.getId());
         }
 
-        members.set(index, replacementMember);
+        matchingRoomMembers.set(index, replacement);
+    }
+
+    public List<Member> getMember () {
+        return matchingRoomMembers.stream().map(MatchingRoomMember::getMember).toList();
     }
 
     public void endGame() {
         this.isGameOver = true;
     }
 
-    private MatchGroup(MatchingRoom matchingRoom, List<Member> members) {
-        this.matchingRoom = matchingRoom;
-        this.members = members;
+    public boolean isNotGame() {
+        return !isGameOver;
     }
 
-    public static MatchGroup createMatchGroup(MatchingRoom matchingRoom, List<Member> members) {
+    public boolean isSameId(Long groupId) {
+        return Objects.equals(id, groupId);
+    }
+
+    private MatchGroup(MatchingRoom matchingRoom, List<MatchingRoomMember> matchingRoomMembers) {
+        this.matchingRoom = matchingRoom;
+        this.matchingRoomMembers = matchingRoomMembers;
+    }
+
+
+    public static MatchGroup createMatchGroup(MatchingRoom matchingRoom, List<MatchingRoomMember> members) {
         return new MatchGroup(matchingRoom, members);
     }
 

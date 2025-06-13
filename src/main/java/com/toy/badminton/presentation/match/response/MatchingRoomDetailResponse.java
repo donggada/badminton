@@ -1,5 +1,6 @@
 package com.toy.badminton.presentation.match.response;
 
+import com.toy.badminton.domain.match.MatchGroup;
 import com.toy.badminton.domain.match.MatchingRoom;
 import com.toy.badminton.domain.member.Member;
 
@@ -18,8 +19,8 @@ public record MatchingRoomDetailResponse(
                 matchingRoom.getId(),
                 matchingRoom.getName(),
                 matchingRoom.getEntryCode(),
-                matchingRoom.getMatchingInfos().stream().map(info -> EnterMember.of(info, matchingRoom.getManagerList())).toList(),
-                matchingRoom.getMatchGroups().stream().map(Group::of).toList(),
+                matchingRoom.getMatchingRoomMembers().stream().map(info -> EnterMember.of(info, matchingRoom.getManagerList())).toList(),
+                matchingRoom.getMatchGroups().stream().filter(MatchGroup::isNotGame).map(Group::of).toList(),
                 matchingRoom.isManager(member)
         );
     }

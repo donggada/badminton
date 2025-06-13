@@ -10,7 +10,7 @@ record Group (
 ) {
 
     public static Group of (MatchGroup matchGroup) {
-        return new Group(matchGroup.getId(), matchGroup.getMembers().stream().map(EnterMember::of).toList());
+        return new Group(matchGroup.getId(), matchGroup.getMatchingRoomMembers().stream().map(EnterMember::of).toList());
     }
 }
 
