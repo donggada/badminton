@@ -31,12 +31,8 @@ public class ManageFacade {
         Member replacementMember = memberServiceApi.findMember(parameters.replacementMemberId());
         Member targetMember = memberServiceApi.findMember(parameters.targetMemberId());
         MatchingRoom matchingRoom = matchService.findManageMatchingRoom(parameters.roomId(), parameters.member());
-        MatchingRoomMember replacementMatchingRoomMember = matchingRoom.findMatchingRoomMemberByMember(replacementMember).orElseThrow(() -> REQUESTER_NOT_FOUND.build(replacementMember.getId()));
-        MatchingRoomMember targetMatchingRoomMember = matchingRoom.findMatchingRoomMemberByMember(targetMember).orElseThrow(() -> TARGET_NOT_FOUND.build(targetMember.getId()));
 
-        matchingRoom.replaceMatchGroupMember(parameters.groupId(), targetMatchingRoomMember, replacementMatchingRoomMember);
-        matchingRoom.changeMatchingStatus(replacementMember, MATCHED);
-        matchingRoom.changeMatchingStatus(targetMember, WAITING);
+        matchingRoom.swapGroupMember(parameters.groupId(), targetMember, replacementMember);
     }
 
     @Transactional

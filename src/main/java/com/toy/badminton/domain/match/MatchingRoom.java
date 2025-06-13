@@ -7,10 +7,10 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.toy.badminton.domain.match.MatchingService.DOUBLES;
-import static com.toy.badminton.domain.match.MatchingStatus.*;
+import static com.toy.badminton.domain.match.MatchingStatus.MATCHED;
+import static com.toy.badminton.domain.match.MatchingStatus.WAITING;
 import static com.toy.badminton.infrastructure.exception.ErrorCode.*;
 
 @Entity
@@ -60,9 +60,11 @@ public class MatchingRoom extends BaseTimeEntity {
 
 
     public List<MatchingRoomMember> getActiveRoomMember() {
-        return matchingRoomMembers.stream()
-                .filter(MatchingRoomMember::isWaiting)
-                .collect(Collectors.toList());
+        return new ArrayList<>(
+                matchingRoomMembers.stream()
+                        .filter(MatchingRoomMember::isWaiting)
+                        .toList()
+        );
     }
 
     public void validateMinActiveMembers(int minSize) {
@@ -100,7 +102,13 @@ public class MatchingRoom extends BaseTimeEntity {
     }
 
     private void validateAddGroupMemberAllInRoom(MatchGroup matchGroup) {
-        matchGroup.getMember().forEach(this::validateMemberInRoom);
+        Set<MatchingRoomMember> allRoomMember = new HashSet<>(matchingRoomMembers);
+        List<MatchingRoomMember> roomMembers = matchGroup.getMatchingRoomMembers();
+        if(!allRoomMember.containsAll(roomMembers)) {
+            String memberIdsNotFound = roomMembers.stream().map(MatchingRoomMember::getId)
+                    .toList().toString();
+            throw ROOM_MEMBER_NOT_IN_ROOM.build(memberIdsNotFound);
+        }
     }
 
     private void validateAddGroupMemberCount(MatchGroup matchGroup) {
@@ -201,13 +209,18 @@ public class MatchingRoom extends BaseTimeEntity {
         matchingRoomMembers.forEach(roomMember -> roomMember.changeStatus(status));
     }
 
+    public void swapGroupMember (Long groupId, Member target, Member replacement) {
+        MatchingRoomMember targetRoomMember = findMatchingRoomMemberByMember(target).orElseThrow(() -> REQUESTER_NOT_FOUND.build(target.getId()));
+        MatchingRoomMember replacementRoomMember = findMatchingRoomMemberByMember(replacement).orElseThrow(() -> TARGET_NOT_FOUND.build(replacement.getId()));
 
-    public void replaceMatchGroupMember (Long groupId, MatchingRoomMember target, MatchingRoomMember replacement) {
         matchGroups.stream()
-                .filter(matchGroup -> Objects.equals(matchGroup.getId(), groupId))
+                .filter(matchGroup -> matchGroup.isSameId(groupId))
                 .findFirst()
                 .orElseThrow(() -> INVALID_MATCHING_GROUP.build(groupId))
-                .replaceMember(target, replacement);
+                .replaceMember(targetRoomMember, replacementRoomMember);
+
+        targetRoomMember.changeStatus(WAITING);
+        replacementRoomMember.changeStatus(MATCHED);
     }
 
     public static MatchingRoom createMatchingRoom(String name, Member member) {

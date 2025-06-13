@@ -31,6 +31,7 @@ public enum ErrorCode {
     DAILY_ROOM_CREATION_LIMIT(HttpStatus.CONFLICT, "활성화된 매칭룸은 하루에 한 개만 생성 가능합니다", ""),
     INACTIVE_MATCHING_ROOM(HttpStatus.CONFLICT, "비활성화된 매칭룸입니다.", "matching_room_id: %d"),
     MANAGER_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "매니저 삭제 권한이 없습니다", "member_id: %d"),
+    ROOM_MEMBER_NOT_IN_ROOM(HttpStatus.CONFLICT, "회원이 매칭방에 존재하지 않습니다.", "matchingRoomMember_ids: %s"),
     MEMBER_NOT_IN_ROOM(HttpStatus.CONFLICT, "회원이 매칭방에 존재하지 않습니다.", "member_id: %d");
 
     private final HttpStatus httpStatus;

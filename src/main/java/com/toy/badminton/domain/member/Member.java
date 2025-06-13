@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false, exclude = "matchingInfos")
+@EqualsAndHashCode(callSuper = false, exclude = "matchingRoomMembers")
 @ToString
 @Builder
 @BatchSize(size = 100)

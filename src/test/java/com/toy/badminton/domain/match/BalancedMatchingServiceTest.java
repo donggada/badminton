@@ -31,11 +31,11 @@ class BalancedMatchingServiceTest {
 
 
         Assertions.assertThat(result).hasSize(1);
-//        Assertions.assertThat(
-//                result
-//        ).containsExactlyInAnyOrderElementsOf(
-//                List.of(MatchGroup.builder().matchingRoom(matchingRoom).matchingRoomMembers(List.of(member1, member4, member2, member3)).build())
-//        );
+        Assertions.assertThat(
+                result
+        ).containsExactlyInAnyOrderElementsOf(
+                List.of(MatchGroup.builder().matchingRoom(matchingRoom).matchingRoomMembers(List.of(matchingRoomMember1, matchingRoomMember4, matchingRoomMember2, matchingRoomMember3)).build())
+        );
     }
 
     @Test
@@ -60,10 +60,10 @@ class BalancedMatchingServiceTest {
 
         Assertions.assertThat(result).hasSize(1);
 
-//        Assertions.assertThat(
-//                result
-//        ).containsExactlyInAnyOrderElementsOf(
-//                List.of(MatchGroup.builder().matchingRoom(matchingRoom).matchingRoomMembers(List.of(member1, member4, member2, member3)).build())
-//        );
+        Assertions.assertThat(
+                result
+        ).containsExactlyInAnyOrderElementsOf(
+                List.of(MatchGroup.builder().matchingRoom(matchingRoom).matchingRoomMembers(List.of(matchingRoomMember1, matchingRoomMember4, matchingRoomMember2, matchingRoomMember3)).build())
+        );
     }
 }

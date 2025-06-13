@@ -119,25 +119,22 @@ class MatchingRoomTest {
         Member member1 = Member.builder().id(1L).build();
         Member member2 = Member.builder().id(2L).build();
         Member member3 = Member.builder().id(3L).build();
-        Member member4 = Member.builder().id(4L).build();
-        List<Member> groupMembers = List.of(member1, member2, member3);
-//        MatchGroup matchGroup = MatchGroup.builder().members(groupMembers).build();
 
         List<MatchingRoomMember> matchingRoomMembers = List.of(
                 MatchingRoomMember.builder().member(member1).status(WAITING).build(),
                 MatchingRoomMember.builder().member(member2).status(WAITING).build(),
-                MatchingRoomMember.builder().member(member3).status(WAITING).build(),
-                MatchingRoomMember.builder().member(member4).status(WAITING).build()
+                MatchingRoomMember.builder().member(member3).status(WAITING).build()
         );
+
+        MatchGroup matchGroup = MatchGroup.builder().matchingRoomMembers(matchingRoomMembers).build();
 
         MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(matchingRoomMembers).build();
 
 
-//        ApplicationException exception = assertThrows(ApplicationException.class,
-//                () -> matchingRoom.addGroup(matchGroup));
-//
-//
-//        assertEquals(NOT_ENOUGH_MATCHING_MEMBERS.getMessage(), exception.getMessage());
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.addGroup(matchGroup));
+
+        assertEquals(NOT_ENOUGH_MATCHING_MEMBERS.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -148,24 +145,32 @@ class MatchingRoomTest {
         Member member3 = Member.builder().id(3L).build();
         Member member4 = Member.builder().id(4L).build();
         Member member5 = Member.builder().id(5L).build();
-        List<Member> groupMembers = List.of(member1, member2, member3, member5);
-//        MatchGroup matchGroup = MatchGroup.builder().members(groupMembers).build();
+        
 
-        List<MatchingRoomMember> matchingRoomMembers = List.of(
+        List<MatchingRoomMember> matchingRoomMembers1 = List.of(
                 MatchingRoomMember.builder().member(member1).status(WAITING).build(),
                 MatchingRoomMember.builder().member(member2).status(WAITING).build(),
                 MatchingRoomMember.builder().member(member3).status(WAITING).build(),
                 MatchingRoomMember.builder().member(member4).status(WAITING).build()
         );
 
-        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(matchingRoomMembers).build();
+        List<MatchingRoomMember> matchingRoomMembers2 = List.of(
+                MatchingRoomMember.builder().member(member1).status(WAITING).build(),
+                MatchingRoomMember.builder().member(member2).status(WAITING).build(),
+                MatchingRoomMember.builder().member(member3).status(WAITING).build(),
+                MatchingRoomMember.builder().member(member5).status(WAITING).build()
+        );
+
+        MatchGroup matchGroup = MatchGroup.builder().matchingRoomMembers(matchingRoomMembers2).build();
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(matchingRoomMembers1).build();
 
 
-//        ApplicationException exception = assertThrows(ApplicationException.class,
-//                () -> matchingRoom.addGroup(matchGroup));
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.addGroup(matchGroup));
 
 
-//        assertEquals(MEMBER_NOT_IN_ROOM.getMessage(), exception.getMessage());
+        assertEquals(ROOM_MEMBER_NOT_IN_ROOM.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -176,23 +181,25 @@ class MatchingRoomTest {
         Member member3 = Member.builder().id(3L).build();
         Member member4 = Member.builder().id(4L).build();
         Member member5 = Member.builder().id(5L).build();
-        List<Member> groupMembers = List.of(member1, member2, member3, member4);
-//        MatchGroup matchGroup = MatchGroup.builder().members(groupMembers).build();
+
         MatchingRoomMember matchingRoomMember1 = MatchingRoomMember.builder().member(member1).status(WAITING).build();
         MatchingRoomMember matchingRoomMember2 = MatchingRoomMember.builder().member(member2).status(WAITING).build();
         MatchingRoomMember matchingRoomMember3 = MatchingRoomMember.builder().member(member3).status(WAITING).build();
         MatchingRoomMember matchingRoomMember4 = MatchingRoomMember.builder().member(member4).status(WAITING).build();
         MatchingRoomMember matchingRoomMember5 = MatchingRoomMember.builder().member(member5).status(WAITING).build();
-        List<MatchingRoomMember> matchingRoomMembers = List.of(matchingRoomMember1, matchingRoomMember2, matchingRoomMember3, matchingRoomMember4);
-        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(matchingRoomMembers).build();
 
-//        matchingRoom.addGroup(matchGroup);
+        List<MatchingRoomMember> groupRoomMembers = List.of(matchingRoomMember1, matchingRoomMember2, matchingRoomMember3, matchingRoomMember4);
+        List<MatchingRoomMember> allRoomMembers = List.of(matchingRoomMember1, matchingRoomMember2, matchingRoomMember3, matchingRoomMember4, matchingRoomMember5);
+        MatchGroup addMatchGroup = MatchGroup.builder().matchingRoomMembers(groupRoomMembers).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(allRoomMembers).build();
 
-//        assertEquals(matchingInfo1.getStatus(), MATCHED);
-//        assertEquals(matchingInfo2.getStatus(), MATCHED);
-//        assertEquals(matchingInfo3.getStatus(), MATCHED);
-//        assertEquals(matchingInfo4.getStatus(), MATCHED);
-//        assertEquals(matchingInfo5.getStatus(), WAITING);
+        matchingRoom.addGroup(addMatchGroup);
+
+        assertEquals(matchingRoomMember1.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember2.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember3.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember4.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember5.getStatus(), WAITING);
     }
 
     @Test
@@ -393,50 +400,6 @@ class MatchingRoomTest {
     }
 
     @Test
-    @DisplayName("findMembersByGroupId: 존재하는 groupId로 멤버 목록 조회 성공")
-    void findMembersByGroupId_ExistingGroup_ReturnsMembers() {
-        Long groupId = 1L;
-        Member memberA = Member.builder().id(1L).build();
-        Member memberB = Member.builder().id(2L).build();
-        Member memberC = Member.builder().id(3L).build();
-        Member memberD = Member.builder().id(4L).build();
-        List<Member> members = List.of(memberA, memberB, memberC, memberD);
-//        MatchGroup matchGroup = MatchGroup.builder()
-//                .id(groupId)
-//                .members(members)
-//                .build();
-//        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
-
-//        List<Member> result = matchingRoom.findMembersByGroupId(groupId);
-//
-//        assertEquals(result.size(), 4);
-//        assertEquals(result, members);
-    }
-
-    @Test
-    @DisplayName("findMembersByGroupId: 존재하지 않는 groupId로 멤버 목록 조회 시 예외 발생")
-    void findMembersByGroupId_NonExistingGroup_ThrowsException() {
-        Long groupId = 1L;
-        Member memberA = Member.builder().id(1L).build();
-        Member memberB = Member.builder().id(2L).build();
-        Member memberC = Member.builder().id(3L).build();
-        Member memberD = Member.builder().id(4L).build();
-        List<Member> members = List.of(memberA, memberB, memberC, memberD);
-//        MatchGroup matchGroup = MatchGroup.builder()
-//                .id(groupId)
-//                .members(members)
-//                .build();
-//        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
-//
-//        ApplicationException exception = assertThrows(ApplicationException.class,
-//                () -> matchingRoom.findMembersByGroupId(2L)
-//        );
-//
-//        assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
-    }
-
-
-    @Test
     @DisplayName("replaceMatchGroupMember: 존재하는 그룹에서 멤버 교체 성공")
     void replaceMatchGroupMember_ExistingGroupAndMember_Success() {
         Long groupId = 1L;
@@ -445,13 +408,34 @@ class MatchingRoomTest {
         Member memberA = Member.builder().id(3L).build();
         Member memberB = Member.builder().id(4L).build();
         Member memberC = Member.builder().id(5L).build();
-        List<Member> members = new ArrayList<>(List.of(memberA, memberB, targetMember, memberC));
-//        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
-//        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
-//
-//        matchingRoom.replaceMatchGroupMember(groupId, targetMember, replacementMember);
-//
-//        assertEquals(members, List.of(memberA, memberB, replacementMember, memberC));
+
+        MatchingRoomMember targetRoomMember = MatchingRoomMember.builder().member(targetMember).status(MATCHED).build();
+        MatchingRoomMember replacementRoomMember = MatchingRoomMember.builder().member(replacementMember).status(MATCHED).build();
+        MatchingRoomMember roomMemberA = MatchingRoomMember.builder().member(memberA).status(MATCHED).build();
+        MatchingRoomMember roomMemberB = MatchingRoomMember.builder().member(memberB).status(MATCHED).build();
+        MatchingRoomMember roomMemberC = MatchingRoomMember.builder().member(memberC).status(MATCHED).build();
+
+        ArrayList<MatchingRoomMember> groupRoomMember = new ArrayList<>(List.of(
+                targetRoomMember,
+                roomMemberA,
+                roomMemberB,
+                roomMemberC
+        ));
+
+        ArrayList<MatchingRoomMember> allRoomMember = new ArrayList<>(List.of(
+                targetRoomMember,
+                replacementRoomMember,
+                roomMemberA,
+                roomMemberB,
+                roomMemberC
+        ));
+
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).matchingRoomMembers(groupRoomMember).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(allRoomMember).matchGroups(List.of(matchGroup)).build();
+
+        matchingRoom.swapGroupMember(groupId, targetMember, replacementMember);
+
+        assertEquals(groupRoomMember, List.of(replacementRoomMember, roomMemberA, roomMemberB, roomMemberC));
     }
 
     @Test
@@ -463,15 +447,37 @@ class MatchingRoomTest {
         Member memberA = Member.builder().id(3L).build();
         Member memberB = Member.builder().id(4L).build();
         Member memberC = Member.builder().id(5L).build();
-        List<Member> members = new ArrayList<>(List.of(memberA, memberB, targetMember, memberC));
-//        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
-//        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
-//
-//        ApplicationException exception = assertThrows(ApplicationException.class,
-//                () -> matchingRoom.replaceMatchGroupMember(2L, targetMember, replacementMember)
-//        );
-//
-//        assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
+
+        MatchingRoomMember targetRoomMember = MatchingRoomMember.builder().member(targetMember).status(MATCHED).build();
+        MatchingRoomMember replacementRoomMember = MatchingRoomMember.builder().member(replacementMember).status(MATCHED).build();
+        MatchingRoomMember roomMemberA = MatchingRoomMember.builder().member(memberA).status(MATCHED).build();
+        MatchingRoomMember roomMemberB = MatchingRoomMember.builder().member(memberB).status(MATCHED).build();
+        MatchingRoomMember roomMemberC = MatchingRoomMember.builder().member(memberC).status(MATCHED).build();
+
+        ArrayList<MatchingRoomMember> groupRoomMember = new ArrayList<>(List.of(
+                targetRoomMember,
+                roomMemberA,
+                roomMemberB,
+                roomMemberC
+        ));
+
+
+        ArrayList<MatchingRoomMember> allRoomMember = new ArrayList<>(List.of(
+                targetRoomMember,
+                replacementRoomMember,
+                roomMemberA,
+                roomMemberB,
+                roomMemberC
+        ));
+
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).matchingRoomMembers(groupRoomMember).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(allRoomMember).matchGroups(List.of(matchGroup)).build();
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.swapGroupMember(2L,  targetMember, replacementMember)
+        );
+
+        assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -484,16 +490,38 @@ class MatchingRoomTest {
         Member memberB = Member.builder().id(4L).build();
         Member memberC = Member.builder().id(5L).build();
         Member memberD = Member.builder().id(6L).build();
-        List<Member> members = new ArrayList<>(List.of(memberA, memberB, memberC, memberD));
-//        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
-//        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
-//
-//        ApplicationException exception = assertThrows(ApplicationException.class,
-//                () -> matchingRoom.replaceMatchGroupMember(groupId, targetMember, replacementMember)
-//        );
-//
-//        assertEquals(TARGET_NOT_FOUND.getMessage(), exception.getMessage());
-//        assertEquals(members, List.of(memberA, memberB, memberC, memberD));
+
+        MatchingRoomMember targetRoomMember = MatchingRoomMember.builder().member(targetMember).status(MATCHED).build();
+        MatchingRoomMember roomMemberA = MatchingRoomMember.builder().member(memberA).status(MATCHED).build();
+        MatchingRoomMember roomMemberB = MatchingRoomMember.builder().member(memberB).status(MATCHED).build();
+        MatchingRoomMember roomMemberC = MatchingRoomMember.builder().member(memberC).status(MATCHED).build();
+        MatchingRoomMember roomMemberD = MatchingRoomMember.builder().member(memberD).status(MATCHED).build();
+
+        ArrayList<MatchingRoomMember> groupRoomMember = new ArrayList<>(List.of(
+                roomMemberA,
+                roomMemberB,
+                roomMemberC,
+                roomMemberD
+        ));
+
+        ArrayList<MatchingRoomMember> allRoomMember = new ArrayList<>(List.of(
+                roomMemberA,
+                roomMemberB,
+                roomMemberC,
+                roomMemberD,
+                targetRoomMember
+        ));
+
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).matchingRoomMembers(groupRoomMember).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(allRoomMember).matchGroups(List.of(matchGroup)).build();
+
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.swapGroupMember(groupId, targetMember, replacementMember)
+        );
+
+        assertEquals(TARGET_NOT_FOUND.getMessage(), exception.getMessage());
+        assertEquals(groupRoomMember, List.of(roomMemberA, roomMemberB, roomMemberC, roomMemberD));
     }
 
     @Test
@@ -504,16 +532,42 @@ class MatchingRoomTest {
         Member replacementMember = Member.builder().id(2L).build();
         Member memberA = Member.builder().id(3L).build();
         Member memberB = Member.builder().id(4L).build();
-        List<Member> members = new ArrayList<>(List.of(memberA, memberB, targetMember, replacementMember));
-//        MatchGroup matchGroup = MatchGroup.builder().id(groupId).members(members).isGameOver(false).build();
-//        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
-//
-//        ApplicationException exception = assertThrows(ApplicationException.class,
-//                () -> matchingRoom.replaceMatchGroupMember(groupId, targetMember, replacementMember)
-//        );
-//
-//        assertEquals(MEMBER_ALREADY_IN_GROUP.getMessage(), exception.getMessage());
-//        assertEquals(members, List.of(memberA, memberB, targetMember, replacementMember));
+
+
+        MatchingRoomMember targetRoomMember = MatchingRoomMember.builder().member(targetMember).status(MATCHED).build();
+        MatchingRoomMember replacementRoomMember = MatchingRoomMember.builder().member(replacementMember).status(MATCHED).build();
+        MatchingRoomMember roomMemberA = MatchingRoomMember.builder().member(memberA).status(MATCHED).build();
+        MatchingRoomMember roomMemberB = MatchingRoomMember.builder().member(memberB).status(MATCHED).build();
+
+
+        ArrayList<MatchingRoomMember> groupRoomMember = new ArrayList<>(
+                List.of(
+                        roomMemberA,
+                        roomMemberB,
+                        targetRoomMember,
+                        replacementRoomMember
+                )
+        );
+
+        ArrayList<MatchingRoomMember> allRoomMember = new ArrayList<>(
+                List.of(
+                        roomMemberA,
+                        roomMemberB,
+                        targetRoomMember,
+                        replacementRoomMember
+                )
+        );
+
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).matchingRoomMembers(groupRoomMember).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(allRoomMember).matchGroups(List.of(matchGroup)).build();
+
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.swapGroupMember(groupId, targetMember, replacementMember)
+        );
+
+        assertEquals(MEMBER_ALREADY_IN_GROUP.getMessage(), exception.getMessage());
+        assertEquals(groupRoomMember, List.of(roomMemberA, roomMemberB, targetRoomMember, replacementRoomMember));
     }
 
 

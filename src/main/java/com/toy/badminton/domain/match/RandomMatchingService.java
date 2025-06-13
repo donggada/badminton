@@ -15,7 +15,7 @@ public class RandomMatchingService implements MatchingService {
         ArrayList<MatchGroup> matchGroupList = new ArrayList<>();
 
         matchingRoom.validateMinActiveMembers(DOUBLES);
-        List<MatchingRoomMember> memberList = matchingRoom.getMatchingRoomMembers();
+        List<MatchingRoomMember> memberList = matchingRoom.getActiveRoomMember();
 
         Collections.shuffle(memberList);
 
