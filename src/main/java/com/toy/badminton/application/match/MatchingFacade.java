@@ -1,5 +1,6 @@
 package com.toy.badminton.application.match;
 
+import com.toy.badminton.api.member.MemberServiceApi;
 import com.toy.badminton.domain.match.MatchingRoomMember;
 import com.toy.badminton.presentation.match.request.ChangeMatchingStatusRequest;
 import com.toy.badminton.presentation.match.request.CreateMatchingRoomRequest;
@@ -20,11 +21,13 @@ import java.util.List;
 public class MatchingFacade {
 
     private final MatchService matchService;
+    private final MemberServiceApi memberServiceApi;
 
     @Transactional
     public CreateMatchingRoomResponse createRoom(CreateMatchingRoomRequest request, Member requestMember) {
+        Member member = memberServiceApi.findMember(requestMember.getId());
         return CreateMatchingRoomResponse.of(
-                matchService.createRoom(request.roomName(), requestMember)
+                matchService.createRoom(request.roomName(), member)
         );
     }
 

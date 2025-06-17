@@ -14,11 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.toy.badminton.domain.match.MatchingStatus.MATCHED;
-import static com.toy.badminton.domain.match.MatchingStatus.WAITING;
-import static com.toy.badminton.infrastructure.exception.ErrorCode.REQUESTER_NOT_FOUND;
-import static com.toy.badminton.infrastructure.exception.ErrorCode.TARGET_NOT_FOUND;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -85,7 +80,7 @@ public class ManageFacade {
     public void customMatching(Long roomId, Member requestMember, CustomGroupingRequest request) {
         List<Member> members = memberServiceApi.findMembersByIds(request.memberIds());
         MatchingRoom matchingRoom = matchService.findManageMatchingRoom(roomId, requestMember);
-        List<MatchingRoomMember> matchingRoomMembers = matchingRoom.findMatchingRoomMemberByMembers(members);
+        List<MatchingRoomMember> matchingRoomMembers = matchingRoom.findMatchingRoomMembersByMembers(members);
 
         matchingRoom.addGroup(MatchGroup.createMatchGroup(matchingRoom, matchingRoomMembers));
     }

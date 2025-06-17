@@ -1,10 +1,8 @@
 package com.toy.badminton.domain.match;
 
-import com.toy.badminton.presentation.match.vo.ChangeGroupParameters;
-import com.toy.badminton.presentation.match.request.GroupStatusChangeRequest;
-import com.toy.badminton.infrastructure.jpa.persistence.match.MatchingRoomQuerydslRepository;
 import com.toy.badminton.domain.member.Member;
 import com.toy.badminton.infrastructure.exception.ErrorCode;
+import com.toy.badminton.infrastructure.jpa.persistence.match.MatchingRoomQuerydslRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +23,7 @@ public class MatchService {
     private final MatchingRoomQuerydslRepository matchingRoomQuerydslRepository;
     private final MatchingFactory matchingFactory;
 
+    @Transactional
     public MatchingRoom createRoom(String name, Member requestMember) {
         validateDailyRoomCreation(requestMember);
         return matchingRoomRepository.save(MatchingRoom.createMatchingRoom(name, requestMember));

@@ -8,6 +8,7 @@ import com.toy.badminton.presentation.match.response.MatchingRoomDetailResponse;
 import com.toy.badminton.application.match.MatchingFacade;
 import com.toy.badminton.domain.member.Member;
 import com.toy.badminton.infrastructure.security.AuthMember;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,6 @@ public class MatchingController {
 
     @GetMapping("")
     public List<MatchingRoomResponse> getMatchingRoomList() {
-        //todo Front 2번 호출 수정필요
         return matchingFacade.getMatchingRoomList();
     }
 
@@ -59,7 +59,7 @@ public class MatchingController {
     public void changeMatchingStatus(
             @PathVariable Long roomId,
             @AuthMember Member member,
-            @RequestBody ChangeMatchingStatusRequest request
+            @RequestBody @Valid ChangeMatchingStatusRequest request
     ) {
         matchingFacade.changeMatchingStatus(roomId, member, request);
     }

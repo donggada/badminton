@@ -14,6 +14,31 @@ import static org.junit.jupiter.api.Assertions.*;
 class MatchingRoomTest {
 
     @Test
+    @DisplayName("getActiveRoomMember: 대기 중인 멤버만 정확히 반환해야 한다")
+    void getActiveRoomMember_shouldReturnOnlyWaitingMembers() {
+        Member member1 = Member.builder().id(1L).build();
+        Member member2 = Member.builder().id(2L).build();
+        Member member3 = Member.builder().id(3L).build();
+
+
+        MatchingRoomMember matchingRoomMember1 = MatchingRoomMember.builder().member(member1).status(WAITING).build();
+        MatchingRoomMember matchingRoomMember2 = MatchingRoomMember.builder().member(member2).status(MATCHING_INACTIVE).build();
+        MatchingRoomMember matchingRoomMember3 = MatchingRoomMember.builder().member(member3).status(WAITING).build();
+
+        List<MatchingRoomMember> matchingRoomMembers = List.of(
+                matchingRoomMember1, matchingRoomMember2, matchingRoomMember3
+        );
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(matchingRoomMembers).build();
+
+        List<MatchingRoomMember> activeMembers = matchingRoom.getActiveRoomMember();
+
+        assertEquals(activeMembers, List.of(matchingRoomMember1, matchingRoomMember3));
+    }
+
+
+
+    @Test
     @DisplayName("validateMinActiveMembers: 최소 인원 충족 시 예외가 발생하지 않는다")
     void validateMinActiveMembers_sufficientMembers_noException() {
         Member member1 = Member.builder().id(1L).build();
@@ -400,8 +425,28 @@ class MatchingRoomTest {
     }
 
     @Test
-    @DisplayName("replaceMatchGroupMember: 존재하는 그룹에서 멤버 교체 성공")
-    void replaceMatchGroupMember_ExistingGroupAndMember_Success() {
+    @DisplayName("findMatchingRoomMembersByMembers: 주어진 Member 리스트에 해당하는 MatchingRoomMember 리스트를 반환해야 한다")
+    void findMatchingRoomMembersByMembers_shouldReturnMatchingRoomMembers_whenMembersExist() {
+        Member memberA = Member.builder().id(3L).build();
+        Member memberB = Member.builder().id(4L).build();
+        Member memberC = Member.builder().id(5L).build();
+        List<Member> targetMembers = List.of(memberA, memberB);
+
+        MatchingRoomMember roomMemberA = MatchingRoomMember.builder().member(memberA).status(MATCHED).build();
+        MatchingRoomMember roomMemberB = MatchingRoomMember.builder().member(memberB).status(MATCHED).build();
+        MatchingRoomMember roomMemberC = MatchingRoomMember.builder().member(memberC).status(MATCHED).build();
+
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchingRoomMembers(List.of(roomMemberA, roomMemberB, roomMemberC)).build();
+
+        List<MatchingRoomMember> result = matchingRoom.findMatchingRoomMembersByMembers(targetMembers);
+
+        assertEquals(result, List.of(roomMemberA, roomMemberB));
+    }
+
+
+    @Test
+    @DisplayName("swapGroupMember: 존재하는 그룹에서 멤버 교체 성공")
+    void swapGroupMember_ExistingGroupAndMember_Success() {
         Long groupId = 1L;
         Member targetMember = Member.builder().id(1L).build();
         Member replacementMember = Member.builder().id(2L).build();
@@ -439,8 +484,8 @@ class MatchingRoomTest {
     }
 
     @Test
-    @DisplayName("replaceMatchGroupMember: 존재하지 않는 groupId로 멤버 교체 시도 시 예외 발생")
-    void replaceMatchGroupMember_NonExistingGroup_ThrowsException() {
+    @DisplayName("swapGroupMember: 존재하지 않는 groupId로 멤버 교체 시도 시 예외 발생")
+    void swapGroupMember_NonExistingGroup_ThrowsException() {
         Long groupId = 1L;
         Member targetMember = Member.builder().id(1L).build();
         Member replacementMember = Member.builder().id(2L).build();
@@ -481,8 +526,8 @@ class MatchingRoomTest {
     }
 
     @Test
-    @DisplayName("replaceMatchGroupMember: 존재하는 그룹이지만 교체 대상 멤버가 없는 경우 예외 발생")
-    void replaceMatchGroupMember_ExistingGroupButTargetMemberNotFound_ThrowsException() {
+    @DisplayName("swapGroupMember: 존재하는 그룹이지만 교체 대상 멤버가 없는 경우 예외 발생")
+    void swapGroupMember_ExistingGroupButTargetMemberNotFound_ThrowsException() {
         Long groupId = 1L;
         Member targetMember = Member.builder().id(1L).build();
         Member replacementMember = Member.builder().id(2L).build();
@@ -525,8 +570,8 @@ class MatchingRoomTest {
     }
 
     @Test
-    @DisplayName("replaceMatchGroupMember: 존재하는 그룹에서 교체할 멤버가 이미 그룹에 있는 경우 예외 발생")
-    void replaceMatchGroupMember_ExistingGroupAndMember_ReplacementAlreadyInGroup_ThrowsException() {
+    @DisplayName("swapGroupMember: 존재하는 그룹에서 교체할 멤버가 이미 그룹에 있는 경우 예외 발생")
+    void swapGroupMember_ExistingGroupAndMember_ReplacementAlreadyInGroup_ThrowsException() {
         Long groupId = 1L;
         Member targetMember = Member.builder().id(1L).build();
         Member replacementMember = Member.builder().id(2L).build();
@@ -570,5 +615,69 @@ class MatchingRoomTest {
         assertEquals(groupRoomMember, List.of(roomMemberA, roomMemberB, targetRoomMember, replacementRoomMember));
     }
 
+    @Test
+    @DisplayName("handleGroupStatusChange: 그룹을 찾고 상태가 COMPLETED일 때 endGame과 changeStatusInGroup을 호출해야 한다")
+    void handleGroupStatusChange_shouldCallEndGameAndChangeStatusInGroup_whenGroupFoundAndStatusCompleted() {
+        Long groupId = 1L;
+        MatchingRoomMember matchingRoomMember1 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember2 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember3 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember4 = MatchingRoomMember.builder().status(MATCHED).build();
+
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).matchingRoomMembers(List.of(matchingRoomMember1, matchingRoomMember2, matchingRoomMember3, matchingRoomMember4)).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+        matchingRoom.handleGroupStatusChange(groupId, COMPLETED);
+
+        assertTrue(matchGroup.isGameOver());
+        assertEquals(matchingRoomMember1.getStatus(), WAITING);
+        assertEquals(matchingRoomMember2.getStatus(), WAITING);
+        assertEquals(matchingRoomMember3.getStatus(), WAITING);
+        assertEquals(matchingRoomMember4.getStatus(), WAITING);
+    }
+
+    @Test
+    @DisplayName("handleGroupStatusChange: 그룹을 찾고 상태가 COMPLETED가 아닐 때 changeStatusInGroup만 호출해야 한다")
+    void handleGroupStatusChange_shouldCallChangeStatusInGroupOnly_whenGroupFoundAndStatusNotCompleted() {
+        Long groupId = 1L;
+        MatchingRoomMember matchingRoomMember1 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember2 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember3 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember4 = MatchingRoomMember.builder().status(MATCHED).build();
+
+        MatchGroup matchGroup = MatchGroup.builder().id(groupId).matchingRoomMembers(List.of(matchingRoomMember1, matchingRoomMember2, matchingRoomMember3, matchingRoomMember4)).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+        matchingRoom.handleGroupStatusChange(groupId, IN_GAME);
+
+        assertFalse(matchGroup.isGameOver());
+        assertEquals(matchingRoomMember1.getStatus(), IN_GAME);
+        assertEquals(matchingRoomMember2.getStatus(), IN_GAME);
+        assertEquals(matchingRoomMember3.getStatus(), IN_GAME);
+        assertEquals(matchingRoomMember4.getStatus(), IN_GAME);
+    }
+
+    @Test
+    @DisplayName("handleGroupStatusChange: 주어진 groupId에 해당하는 그룹이 없을 때 INVALID_MATCHING_GROUP 예외를 던져야 한다")
+    void handleGroupStatusChange_shouldThrowException_whenGroupNotFound() {
+        Long groupId = 1L;
+        MatchingRoomMember matchingRoomMember1 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember2 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember3 = MatchingRoomMember.builder().status(MATCHED).build();
+        MatchingRoomMember matchingRoomMember4 = MatchingRoomMember.builder().status(MATCHED).build();
+
+        MatchGroup matchGroup = MatchGroup.builder().id(2L).matchingRoomMembers(List.of(matchingRoomMember1, matchingRoomMember2, matchingRoomMember3, matchingRoomMember4)).isGameOver(false).build();
+        MatchingRoom matchingRoom = MatchingRoom.builder().matchGroups(List.of(matchGroup)).build();
+
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> matchingRoom.handleGroupStatusChange(groupId, IN_GAME)
+        );
+
+        assertEquals(INVALID_MATCHING_GROUP.getMessage(), exception.getMessage());
+        assertFalse(matchGroup.isGameOver());
+        assertEquals(matchingRoomMember1.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember2.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember3.getStatus(), MATCHED);
+        assertEquals(matchingRoomMember4.getStatus(), MATCHED);
+    }
 
 }

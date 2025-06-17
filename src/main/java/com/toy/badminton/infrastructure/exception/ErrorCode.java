@@ -10,7 +10,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    INVALID_LOGIN_ID(HttpStatus.CONFLICT, "로그인 실패 입니다.", "login_id: %s"),
+    INVALID_LOGIN_ID(HttpStatus.CONFLICT, "존재 하지 않는 아이디 입니다.", "login_id: %s"),
     INVALID_MEMBER(HttpStatus.CONFLICT, "존재하지 않는 유저입니다.", "member_id: %s"),
     MEMBER_NOT_FOUND(CONFLICT, "없는 회원 입니다.", "login_id: %s"),
     DUPLICATE_LOGIN_ID(CONFLICT, "이미 존재한 아이디 입니다.", "login_id: %s"),

@@ -156,13 +156,13 @@ public class MatchingRoom extends BaseTimeEntity {
     }
 
 
-    public Optional<MatchingRoomMember> findMatchingRoomMemberByMember(Member member) {
+    private Optional<MatchingRoomMember> findMatchingRoomMemberByMember(Member member) {
         return matchingRoomMembers.stream()
                 .filter(roomMember -> roomMember.isMember(member))
                 .findFirst();
     }
 
-    public List<MatchingRoomMember> findMatchingRoomMemberByMembers(List<Member> members) {
+    public List<MatchingRoomMember> findMatchingRoomMembersByMembers(List<Member> members) {
         Set<Member> memberSet = new HashSet<>(members);
         return matchingRoomMembers.stream()
                 .filter(roomMember -> memberSet.contains(roomMember.getMember()))
@@ -198,7 +198,7 @@ public class MatchingRoom extends BaseTimeEntity {
 
         if (status.isCompleted()) {
             group.endGame();
-            changeStatusInGroup(roomMembers, status);
+            changeStatusInGroup(roomMembers, WAITING);
             return;
         }
 
