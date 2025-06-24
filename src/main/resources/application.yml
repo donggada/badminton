@@ -81,3 +81,17 @@ spring:
 
 springdoc :
   override-with-generic-response : false
+
+# 로깅 레벨 설정
+logging:
+  level:
+    com:
+      yourpackage:
+        filter:
+          RequestResponseLoggingFilter: DEBUG
+
+  # 로그 파일 설정 (선택사항)
+  file:
+    name: logs/application.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
